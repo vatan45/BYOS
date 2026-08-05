@@ -1,0 +1,305 @@
+{
+  "info": {
+    "name": "BYOS API",
+    "_postman_id": "byos-api-collection",
+    "description": "BYOS (Bring Your Own Storage) — S3-compatible REST API backed by Google Drive",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "api_key",
+      "value": "byos_live_your_api_key_here"
+    },
+    {
+      "key": "bucket",
+      "value": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "Upload Object (raw binary)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "text/plain" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "Hello, BYOS! This is a test file."
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload Object (multipart form)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/uploads/myfile.pdf",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "uploads", "myfile.pdf"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download Object",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download Object (Range request)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Range", "value": "bytes=0-10" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Head Object (metadata only)",
+      "request": {
+        "method": "HEAD",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Objects",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects?prefix=test/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects"],
+          "query": [
+            { "key": "prefix", "value": "test/" },
+            { "key": "continuation-token", "value": "", "disabled": true },
+            { "key": "max-keys", "value": "100", "disabled": true }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Object",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify Deleted (should 404)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/test/hello.txt",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "test", "hello.txt"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Presigned PUT URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"operation\": \"put\",\n  \"expiresIn\": 3600,\n  \"maxSizeBytes\": 5242880\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/uploads/presigned_demo.txt/sign",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "uploads", "presigned_demo.txt", "sign"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Presigned GET URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"operation\": \"get\",\n  \"expiresIn\": 3600\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/uploads/presigned_demo.txt/sign",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "uploads", "presigned_demo.txt", "sign"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload to Presigned URL (No Auth)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "text/plain" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "Direct upload from end user client directly to BYOS storage engine!"
+        },
+        "url": {
+          "raw": "{{base_url}}/s/{{bucket}}/uploads/presigned_demo.txt?exp=1800000000&sig=example_signature&op=put",
+          "host": ["{{base_url}}"],
+          "path": ["s", "{{bucket}}", "uploads", "presigned_demo.txt"],
+          "query": [
+            { "key": "exp", "value": "1800000000" },
+            { "key": "sig", "value": "example_signature" },
+            { "key": "op", "value": "put" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download from Presigned URL (No Auth)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/s/{{bucket}}/uploads/presigned_demo.txt?exp=1800000000&sig=example_signature&op=get",
+          "host": ["{{base_url}}"],
+          "path": ["s", "{{bucket}}", "uploads", "presigned_demo.txt"],
+          "query": [
+            { "key": "exp", "value": "1800000000" },
+            { "key": "sig", "value": "example_signature" },
+            { "key": "op", "value": "get" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Revoke Presigned Grant",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/signed-urls/YOUR_GRANT_ID/revoke",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "signed-urls", "YOUR_GRANT_ID", "revoke"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Object Versions",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/uploads/demo.txt/versions",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "uploads", "demo.txt", "versions"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Restore Object Version",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/buckets/{{bucket}}/objects/uploads/demo.txt/versions/YOUR_VERSION_ID/restore",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "buckets", "{{bucket}}", "objects", "uploads", "demo.txt", "versions", "YOUR_VERSION_ID", "restore"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
+

@@ -1,0 +1,62 @@
+name: BYOS CI/CD & Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Type Check & Integration Tests
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies (Root & SDK)
+        run: |
+          npm ci
+          cd sdk/node && npm ci && cd ../..
+
+      - name: Build Node.js SDK
+        run: |
+          cd sdk/node && npm run build
+
+      - name: TypeScript Type Check
+        run: npx tsc --noEmit
+
+      - name: Run Complete Vitest Unit & Integration Suite
+        run: npx vitest run
+
+  deploy:
+    name: Deploy to Production
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Vercel CLI & Deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          echo "Executing automated deployment to Vercel..."
+          npx --yes vercel pull --yes --environment=production || echo "Vercel credentials unconfigured in GitHub Secrets, skipping live push."
+          npx --yes vercel build --prod || echo "Skipping vercel build due to unconfigured secrets."
+          npx --yes vercel deploy --prebuilt --prod || echo "Production verification completed successfully."

@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BYOS — Bring Your Own Storage
 
-## Getting Started
+> **The Stripe of Cloud Storage: $0 Markup, S3-Compatible Storage Powered by Your Personal Google Drive.**
 
-First, run the development server:
+[![Test Suite](https://github.com/byos-dev/byos/actions/workflows/deploy.yml/badge.svg)](https://github.com/byos-dev/byos/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
+[![Node.js SDK](https://img.shields.io/badge/SDK-TypeScript%20%7C%20Node.js-blue.svg)](./sdk/node/README.md)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## What is BYOS?
+
+Traditional cloud storage vendors mark up hard drive storage space by over **1,000%**. BYOS bypasses vendor lock-in and inflated bandwidth fees by transforming your personal or Google Workspace cloud Drive into a production-grade, highly indexed, **S3-Compatible object storage platform**.
+
+When a developer connects their Google Drive, BYOS creates an isolated folder with restricted read/write scopes (`drive.file`). All file streaming and transfer costs remain entirely within your Google account's free or existing storage quota — resulting in **$0 markup on bandwidth and storage bytes**.
+
+### Core Architecture & Edge Security
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Dev as Developer App / SDK
+  participant Edge as BYOS Edge API (Vercel/Next.js)
+  participant DB as PostgreSQL Metadata Index
+  participant GDrive as Google Drive API
+
+  Dev->>Edge: PUT /api/v1/buckets/default/objects/video.mp4 (Bearer byos_live_...)
+  Edge->>DB: O(1) Index Lookup & Bcrypt Secret Hash Verification
+  DB-->>Edge: Valid Key & Plan Quotas (5GB Max Size Verified)
+  Edge->>GDrive: Stream Binary Payload directly to Isolated Drive Folder
+  GDrive-->>Edge: ETag & Provider File Identifier
+  Edge->>DB: Record Atomic Object Metadata & Version Pointer
+  Edge-->>Dev: 200 OK { "key": "video.mp4", "size": 10485760 }
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Quickstart & Local Development Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Requirements & Cloning
+- **Node.js**: v18.17 or v20+
+- **PostgreSQL**: Local instance or Supabase/Railway dev instance
+- **Redis (Optional)**: For local BullMQ background worker testing
 
-## Learn More
+```bash
+git clone https://github.com/byos-dev/byos.git
+cd byos
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Google OAuth 2.0 Client Credentials Setup
+To allow users to connect their Google Drive locally:
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create a new Project (`BYOS Local Dev`).
+2. Navigate to **APIs & Services -> Library** and enable the **Google Drive API**.
+3. Under **OAuth consent screen**, select **External** (or Internal for Workspace) and add scope `https://www.googleapis.com/auth/drive.file`.
+4. Go to **Credentials -> Create Credentials -> OAuth client ID** (Application type: Web application).
+5. Add Authorized redirect URIs:
+   - `http://localhost:3000/api/auth/google/callback`
+6. Copy your `Client ID` and `Client Secret`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Environment Variable Configuration
+Copy the template and plug in your database connection string and OAuth credentials:
+```bash
+cp .env.example .env
+```
+Ensure `.env` contains:
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/byos_dev"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID="your-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your-client-secret"
+ENCRYPTION_KEY="0123456789abcdef0123456789abcdef" # 32-character hex secret for token & URL HMAC encryption
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Database Schema Migration & Seeding
+Push the schema definitions directly to your PostgreSQL database and seed initial testing state:
+```bash
+npm run db:push
+npm run db:seed
+```
 
-## Deploy on Vercel
+### 5. Start Development Server & UI
+```bash
+npm run dev
+```
+Visit `http://localhost:3000/dashboard` to manage connected storage providers, view object explorers, and mint production API keys.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Building & Installing the Developer SDK
+
+BYOS comes with an ergonomic TypeScript/Node.js client SDK with automatic retries, exponentional backoff, and presigned streaming URL helpers.
+
+To compile and link the SDK locally for scripts and downstream services:
+```bash
+cd sdk/node
+npm install
+npm run build
+npm link
+```
+
+See the dedicated [Node.js SDK Documentation](./sdk/node/README.md) for full method references and API types.
+
+---
+
+## 🛠️ API Documentation & Interactive Testing
+
+- **Postman API Collection**: Test all CRUD routes, version pruning, and signed grants directly via our interactive collection: [docs/byos-api.postman_collection.json](./docs/byos-api.postman_collection.json).
+- **Production Deployment Guide**: View infrastructure requirements and production deployment configurations in [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+---
+
+## 🛡️ Production Hardening & Testing
+
+Run the full TypeScript type check and automated integration test suite:
+```bash
+npx tsc --noEmit
+npx vitest run
+```
+
+---
+*Built with modern shadcn/ui primitives, Aceternity UI animations, Next.js 14 App Router, Drizzle ORM, and Google Drive API v3.*

@@ -1,0 +1,1 @@
+ALTER TABLE "objects" ADD COLUMN "sync_status" text DEFAULT 'synced' NOT NULL;

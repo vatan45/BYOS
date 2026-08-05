@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://byos-production-e772.up.railway.app/api/v1/:path*"
+    },
+    {
+      "source": "/api/auth/:path*",
+      "destination": "https://byos-production-e772.up.railway.app/api/auth/:path*"
+    },
+    {
+      "source": "/s/:path*",
+      "destination": "https://byos-production-e772.up.railway.app/s/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/v1/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Authorization, Content-Type, x-user-id, x-byos-version, x-byos-hash" }
+      ]
+    }
+  ]
+}

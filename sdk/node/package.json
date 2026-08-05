@@ -1,0 +1,50 @@
+{
+  "name": "byos-sdk",
+  "version": "0.1.0",
+  "description": "Official Developer SDK for BYOS (Bring Your Own Storage) - drop-in S3-compatible object storage backed by user storage connections.",
+  "author": "BYOS Team",
+  "license": "MIT",
+  "keywords": [
+    "byos",
+    "storage",
+    "s3",
+    "google-drive",
+    "cloud-storage",
+    "object-storage",
+    "sdk"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "msw": "^2.2.3",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
+  }
+}
