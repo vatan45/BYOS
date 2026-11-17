@@ -4,6 +4,8 @@ import { env } from "@/lib/env";
 import { getDashboardSessionUser } from "@/lib/auth/session";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const sessionUser = await getDashboardSessionUser(request);
   const userId = sessionUser ? sessionUser.id : "00000000-0000-0000-0000-000000000000";

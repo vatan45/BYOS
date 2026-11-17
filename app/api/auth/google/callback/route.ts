@@ -7,6 +7,8 @@ import { storageConnections, buckets, users } from "@/lib/db/schema";
 import { google } from "googleapis";
 import { and, eq } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
