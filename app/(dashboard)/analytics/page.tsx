@@ -161,86 +161,85 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       {/* HEADING */}
-      <div className="preview-heading">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="muted">METRICS & THROUGHPUT</span>
-          <h3>Analytics</h3>
+          <h1 className="text-3xl tracking-tight font-semibold text-stone-100">Analytics</h1>
+          <p className="mt-1 text-sm text-stone-400">Inspect storage growth, request counts, and data transfer rates.</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Tabs
-            value={granularity}
-            onValueChange={(val) => setGranularity(val)}
-            className="w-36"
-          >
-            <TabsList className="bg-[#111411] border border-[#292d29] grid w-full grid-cols-2">
-              <TabsTrigger
-                value="day"
-                className="data-[state=active]:bg-[#d8f99c] data-[state=active]:text-[#111411] text-xs"
-              >
-                Daily
-              </TabsTrigger>
-              <TabsTrigger
-                value="week"
-                className="data-[state=active]:bg-[#d8f99c] data-[state=active]:text-[#111411] text-xs"
-              >
-                Weekly
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center bg-stone-900 border border-stone-700 rounded-lg p-1 text-xs">
+            <button
+              onClick={() => setGranularity("day")}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                granularity === "day"
+                  ? "bg-emerald-400 text-stone-950"
+                  : "text-stone-400 hover:text-stone-100"
+              }`}
+            >
+              Daily
+            </button>
+            <button
+              onClick={() => setGranularity("week")}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                granularity === "week"
+                  ? "bg-emerald-400 text-stone-950"
+                  : "text-stone-400 hover:text-stone-100"
+              }`}
+            >
+              Weekly
+            </button>
+          </div>
           <button
             onClick={fetchAnalytics}
-            className="p-2 border border-[#292d29] rounded bg-[#111411] hover:bg-[#1a2018] text-[#929a8d] hover:text-[#f0f2eb] transition-colors"
+            className="p-2.5 border border-stone-800 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-stone-100 transition-colors"
             title="Refresh"
           >
-            <RefreshCw size={13} />
+            <RefreshCw size={14} />
           </button>
         </div>
       </div>
 
-      {/* STATS STRIP */}
-      <div className="preview-stats">
-        <div>
-          <span>Storage used</span>
-          <strong>
+      {/* STATS CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-stone-900 border border-stone-800 rounded-lg p-5">
+          <div className="text-xs font-medium text-stone-400 uppercase tracking-wider">Storage used</div>
+          <div className="text-2xl font-semibold text-stone-100 mt-2">
             {formatBytes(summary.totalStorageBytes)}
-          </strong>
-          <small>Across {summary.objectCount} objects</small>
+          </div>
+          <div className="text-xs text-stone-400 mt-2">Across {summary.objectCount} objects</div>
         </div>
-        <div>
-          <span>Bandwidth</span>
-          <strong>
+        <div className="bg-stone-900 border border-stone-800 rounded-lg p-5">
+          <div className="text-xs font-medium text-stone-400 uppercase tracking-wider">Bandwidth</div>
+          <div className="text-2xl font-semibold text-stone-100 mt-2">
             {formatBytes(summary.totalBandwidthBytes)}
-          </strong>
-          <small>Zero egress fees</small>
+          </div>
+          <div className="text-xs text-stone-400 mt-2">Zero egress fees</div>
         </div>
-        <div>
-          <span>API requests</span>
-          <strong>{summary.totalRequests.toLocaleString()}</strong>
-          <small>Total operations</small>
+        <div className="bg-stone-900 border border-stone-800 rounded-lg p-5">
+          <div className="text-xs font-medium text-stone-400 uppercase tracking-wider">API requests</div>
+          <div className="text-2xl font-semibold text-stone-100 mt-2">{summary.totalRequests.toLocaleString()}</div>
+          <div className="text-xs text-stone-400 mt-2">Total operations</div>
         </div>
       </div>
 
-      {/* CHARTS SECTION (Recharts in shadcn Cards) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="bg-stone-900/60 border-stone-800 p-6 shadow-sm">
-          <CardHeader className="p-0 mb-6 border-b border-stone-800/80 pb-4 flex flex-row items-center justify-between space-y-0">
+      {/* CHARTS SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-stone-900 border border-stone-800 rounded-lg p-6">
+          <div className="mb-6 border-b border-stone-800/80 pb-4 flex items-center justify-between">
             <div>
-              <CardTitle className="text-base font-extrabold text-white">
+              <h3 className="text-base font-semibold text-stone-100">
                 Storage Capacity Over Time
-              </CardTitle>
-              <CardDescription className="text-xs text-stone-400 font-mono">
+              </h3>
+              <p className="text-xs text-stone-400 mt-0.5">
                 Total bytes hosted in Google Drive provider
-              </CardDescription>
+              </p>
             </div>
-            <Badge
-              variant="outline"
-              className="text-[10px] uppercase font-mono bg-stone-800 text-stone-300 border-stone-700"
-            >
-              Daily Rollup
-            </Badge>
-          </CardHeader>
-          <CardContent className="p-0 h-72 w-full">
+            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
+              Rollup
+            </span>
+          </div>
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={series}
@@ -248,8 +247,8 @@ export default function AnalyticsPage() {
               >
                 <defs>
                   <linearGradient id="colorStorage" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#06B6D4" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#34d399" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#292524" />
@@ -269,7 +268,7 @@ export default function AnalyticsPage() {
                   contentStyle={{
                     backgroundColor: "#1c1917",
                     borderColor: "#292524",
-                    borderRadius: "12px",
+                    borderRadius: "8px",
                     color: "#fff",
                     fontSize: "12px",
                   }}
@@ -282,34 +281,31 @@ export default function AnalyticsPage() {
                   type="monotone"
                   dataKey="storageUsed"
                   name="Storage (Bytes)"
-                  stroke="#10B981"
-                  strokeWidth={2.5}
+                  stroke="#34d399"
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorStorage)"
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-stone-900/60 border-stone-800 p-6 shadow-sm">
-          <CardHeader className="p-0 mb-6 border-b border-stone-800/80 pb-4 flex flex-row items-center justify-between space-y-0">
+        <div className="bg-stone-900 border border-stone-800 rounded-lg p-6">
+          <div className="mb-6 border-b border-stone-800/80 pb-4 flex items-center justify-between">
             <div>
-              <CardTitle className="text-base font-extrabold text-white">
+              <h3 className="text-base font-semibold text-stone-100">
                 Requests by Operation Type
-              </CardTitle>
-              <CardDescription className="text-xs text-stone-400 font-mono">
+              </h3>
+              <p className="text-xs text-stone-400 mt-0.5">
                 Stacked throughput (Upload / Download / Delete / List)
-              </CardDescription>
+              </p>
             </div>
-            <Badge
-              variant="secondary"
-              className="text-[10px] uppercase font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
-            >
-              Granular Operations
-            </Badge>
-          </CardHeader>
-          <CardContent className="p-0 h-72 w-full">
+            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
+              Operations
+            </span>
+          </div>
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={series}
@@ -332,7 +328,7 @@ export default function AnalyticsPage() {
                   contentStyle={{
                     backgroundColor: "#1c1917",
                     borderColor: "#292524",
-                    borderRadius: "12px",
+                    borderRadius: "8px",
                     color: "#fff",
                     fontSize: "12px",
                   }}
@@ -345,107 +341,89 @@ export default function AnalyticsPage() {
                   dataKey="upload"
                   name="PUT Upload"
                   stackId="a"
-                  fill="#10B981"
+                  fill="#34d399"
                   radius={[0, 0, 0, 0]}
                 />
                 <Bar
                   dataKey="download"
                   name="GET Download"
                   stackId="a"
-                  fill="#06B6D4"
+                  fill="#60a5fa"
                 />
                 <Bar
                   dataKey="list"
                   name="GET List"
                   stackId="a"
-                  fill="#3B82F6"
+                  fill="#a78bfa"
                 />
                 <Bar
                   dataKey="delete"
                   name="DELETE"
                   stackId="a"
-                  fill="#F43F5E"
+                  fill="#f87171"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* TOP ACCESSED OBJECTS TABLE */}
-      <Card className="bg-stone-900/60 border-stone-800 overflow-hidden shadow-sm">
-        <CardHeader className="p-6 bg-stone-900/80 border-b border-stone-800 flex flex-row items-center justify-between space-y-0">
+      <div className="border border-stone-800 rounded-lg overflow-hidden bg-stone-900/40">
+        <div className="px-5 py-4 bg-stone-900 border-b border-stone-800 flex items-center justify-between">
           <div>
-            <CardTitle className="font-extrabold text-white text-base">
-              Top Accessed S3 Objects
-            </CardTitle>
-            <CardDescription className="text-xs text-stone-400 font-mono mt-0.5">
+            <h3 className="text-base font-semibold text-stone-100">
+              Top Accessed Objects
+            </h3>
+            <p className="text-xs text-stone-400 mt-0.5">
               Most active keys sorted by request count & bandwidth
-            </CardDescription>
+            </p>
           </div>
-          <Badge
-            variant="outline"
-            className="bg-emerald-500/10 text-emerald-400 font-mono text-xs font-bold border-emerald-500/30"
-          >
-            Top {topObjects.length} Active Files
-          </Badge>
-        </CardHeader>
-        <Table>
-          <TableHeader className="bg-stone-950/80">
-            <TableRow className="border-stone-800 hover:bg-transparent">
-              <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">
-                Object Key Path
-              </TableHead>
-              <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">
-                Total Request Hits
-              </TableHead>
-              <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">
-                Total Bandwidth Transferred
-              </TableHead>
-              <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">
-                Last Accessed Timestamp
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-stone-800 text-sm">
-            {topObjects.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="py-12 text-center text-stone-400 font-mono text-xs"
-                >
-                  No object interactions logged during this monitoring window.
-                </TableCell>
-              </TableRow>
-            ) : (
-              topObjects.map((obj) => (
-                <TableRow
-                  key={obj.key}
-                  className="hover:bg-stone-800/50 transition-colors border-stone-800"
-                >
-                  <TableCell className="py-4 px-6 font-mono text-white font-semibold flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
-                    <span>{obj.key}</span>
-                  </TableCell>
-                  <TableCell className="py-4 px-6 font-mono font-bold text-emerald-400">
-                    {obj.requests}{" "}
-                    <span className="text-xs text-stone-500 font-normal">
-                      hits
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4 px-6 font-mono text-stone-300">
-                    {formatBytes(obj.bytes)}
-                  </TableCell>
-                  <TableCell className="py-4 px-6 font-mono text-xs text-stone-400">
-                    {new Date(obj.lastAccessed).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 font-medium">
+            Top {topObjects.length} files
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-stone-900/80 text-xs font-medium text-stone-400 uppercase tracking-wider border-b border-stone-800">
+              <tr>
+                <th className="py-3 px-5">Object Key</th>
+                <th className="py-3 px-5">Requests</th>
+                <th className="py-3 px-5">Bandwidth</th>
+                <th className="py-3 px-5">Last Accessed</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-800/60 text-stone-200">
+              {topObjects.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-12 text-center text-stone-400 text-sm">
+                    No object interactions logged during this monitoring window.
+                  </td>
+                </tr>
+              ) : (
+                topObjects.map((obj) => (
+                  <tr key={obj.key} className="hover:bg-stone-800/30 transition-colors">
+                    <td className="py-3.5 px-5 font-mono text-stone-100 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                      <span>{obj.key}</span>
+                    </td>
+                    <td className="py-3.5 px-5 font-mono font-medium text-emerald-400">
+                      {obj.requests} <span className="text-xs text-stone-500 font-normal">hits</span>
+                    </td>
+                    <td className="py-3.5 px-5 font-mono text-stone-300">
+                      {formatBytes(obj.bytes)}
+                    </td>
+                    <td className="py-3.5 px-5 font-mono text-xs text-stone-400">
+                      {new Date(obj.lastAccessed).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

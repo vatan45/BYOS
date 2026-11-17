@@ -7,6 +7,7 @@ import {
   Copy,
   Check,
   Code,
+  Plus,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -51,7 +52,7 @@ export default function ApiKeysPage() {
       .then((data) => {
         if (data?.buckets) setBuckets(data.buckets);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const fetchKeys = async () => {
@@ -132,37 +133,37 @@ export default function ApiKeysPage() {
   return (
     <div className="space-y-8">
       {/* HEADING */}
-      <div className="preview-heading">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="muted">AUTHENTICATION & ACCESS</span>
-          <h3>API keys</h3>
+          <h1 className="text-3xl tracking-tight font-semibold text-stone-100">API keys</h1>
+          <p className="mt-1 text-sm text-stone-400">Generate and manage cryptographic credentials for programmatic S3 access.</p>
         </div>
         <button
           onClick={() => {
             setCreateError(null);
             setShowCreateModal(true);
           }}
-          className="preview-create"
+          className="inline-flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2.5 rounded-lg text-sm transition-colors self-start sm:self-auto"
         >
-          + Generate key
+          <Plus size={16} /> Generate key
         </button>
       </div>
 
       {/* REVEALED BANNER (If modal was dismissed) */}
       {revealedSecret && !showSecretModal && (
-        <div className="p-4 rounded-lg border border-[#343a31] bg-[#111411] space-y-2">
+        <div className="p-4 rounded-lg border border-stone-800 bg-stone-900 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-[#d8f99c] font-medium">Your API key is active</span>
+            <span className="text-sm text-emerald-400 font-medium">Your API key is active</span>
             <button
               onClick={() => setRevealedSecret(null)}
-              className="text-xs text-[#929a8d] hover:text-[#f0f2eb]"
+              className="text-xs text-stone-400 hover:text-stone-100"
             >
               Dismiss
             </button>
           </div>
-          <p className="text-xs text-[#929a8d]">Copy this key now. It will not be shown again.</p>
-          <div className="flex items-center justify-between gap-2 bg-[#0c0e0d] p-2 rounded border border-[#292d29]">
-            <code className="font-mono text-xs text-[#d8f99c] break-all select-all flex-1">
+          <p className="text-xs text-stone-400">Copy this key now. It will not be shown again.</p>
+          <div className="flex items-center justify-between gap-2 bg-stone-950 p-2.5 rounded-lg border border-stone-800">
+            <code className="font-mono text-xs text-emerald-400 break-all select-all flex-1">
               {revealedSecret}
             </code>
             <button
@@ -172,7 +173,7 @@ export default function ApiKeysPage() {
                 toast.success("Key copied");
                 setTimeout(() => setCopiedSecret(false), 2000);
               }}
-              className="action small !py-1 !px-3 shrink-0"
+              className="inline-flex items-center gap-1.5 bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-3 py-1 rounded text-xs transition-colors shrink-0"
             >
               {copiedSecret ? <Check size={12} /> : <Copy size={12} />}
               {copiedSecret ? "Copied" : "Copy"}
@@ -184,76 +185,76 @@ export default function ApiKeysPage() {
       {/* KEYS TABLE */}
       {loading ? (
         <div className="space-y-3">
-          <Skeleton className="h-10 w-full bg-[#161a16] rounded" />
-          <Skeleton className="h-10 w-full bg-[#161a16] rounded" />
+          <Skeleton className="h-12 w-full bg-stone-900 rounded-lg" />
+          <Skeleton className="h-12 w-full bg-stone-900 rounded-lg" />
         </div>
       ) : activeKeys.length === 0 ? (
-        <div className="py-16 text-center text-xs text-[#929a8d] border border-[#292d29] rounded-lg bg-[#111411]">
-          No active API keys. Click <span className="text-[#d8f99c] font-medium">+ Generate key</span> above to create one.
+        <div className="py-16 text-center text-sm text-stone-400 border border-stone-800 rounded-lg bg-stone-900/40">
+          No active API keys found. Click <span className="text-emerald-400 font-medium">+ Generate key</span> above to create one.
         </div>
       ) : (
-        <div className="preview-table">
-          <div>
-            <span>NAME</span>
-            <span>PREFIX</span>
-            <span>ACTIONS</span>
+        <div className="border border-stone-800 rounded-lg overflow-hidden bg-stone-900/40">
+          <div className="px-5 py-4 bg-stone-900 border-b border-stone-800 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-stone-100">Active API Keys</h2>
+            <span className="text-xs text-stone-400">{activeKeys.length} active</span>
           </div>
-          {activeKeys.map((k) => (
-            <div key={k.id}>
-              <span>
-                <KeyRound size={15} className="text-[#d8f99c]" />
-                <span className="font-medium text-[#f0f2eb]">{k.name}</span>
-                <span className="text-[10px] text-[#929a8d] font-mono ml-2">
-                  ({k.scopes.join(", ")})
-                </span>
-              </span>
-              <span className="font-mono text-xs text-[#929a8d]">
-                {k.keyPrefix}...
-              </span>
-              <span>
+
+          <div className="divide-y divide-stone-800/60">
+            {activeKeys.map((k) => (
+              <div key={k.id} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-stone-800/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <KeyRound size={18} className="text-emerald-400 shrink-0" />
+                  <div>
+                    <div className="font-medium text-stone-100 flex items-center gap-2">
+                      <span>{k.name}</span>
+                      <span className="text-xs text-stone-400 font-mono">({k.scopes.join(", ")})</span>
+                    </div>
+                    <div className="text-xs text-stone-500 font-mono mt-0.5">Prefix: {k.keyPrefix}...</div>
+                  </div>
+                </div>
                 <button
                   onClick={() => handleRevokeKey(k.id, k.name)}
-                  className="text-xs text-[#929a8d] hover:text-rose-400 flex items-center gap-1 transition-colors"
+                  className="text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 px-3 py-1.5 rounded-lg transition-colors self-start sm:self-auto flex items-center gap-1.5"
                 >
                   <Trash2 size={13} /> Revoke
                 </button>
-              </span>
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {/* NEW KEY DIALOG */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="bg-[#111411] border-[#292d29] text-[#f0f2eb] sm:max-w-md rounded-lg p-6">
+        <DialogContent className="bg-stone-900 border border-stone-800 text-stone-100 sm:max-w-md rounded-lg p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium text-[#f0f2eb]">Generate API key</DialogTitle>
-            <DialogDescription className="text-xs text-[#929a8d]">
+            <DialogTitle className="text-xl font-semibold tracking-tight text-stone-100">Generate API key</DialogTitle>
+            <DialogDescription className="text-sm text-stone-400 mt-1">
               Create credentials for your applications to access BYOS.
             </DialogDescription>
           </DialogHeader>
 
           {createError && (
-            <div className="p-3 rounded border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs">
+            <div className="p-3 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 text-sm">
               {createError}
             </div>
           )}
 
           <form onSubmit={handleCreateKey} className="space-y-4 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs text-[#929a8d]">Key name</Label>
-              <Input
+            <div>
+              <label className="block text-sm mb-2 text-stone-200">Key name</label>
+              <input
                 type="text"
                 required
                 placeholder="e.g. backend-service"
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
-                className="bg-[#0c0e0d] border-[#292d29] text-[#f0f2eb] font-mono text-sm focus-visible:ring-[#d8f99c] rounded"
+                className="w-full rounded-lg border border-stone-700 bg-stone-900 p-3 text-stone-100 placeholder:text-stone-500 focus:outline-none focus:border-emerald-400 text-sm"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-[#929a8d]">Scopes</Label>
+            <div>
+              <label className="block text-sm mb-2 text-stone-200">Permissions (Scopes)</label>
               <div className="grid grid-cols-2 gap-2">
                 {["read", "write", "list", "delete"].map((scope) => {
                   const checked = newKeyScopes.includes(scope);
@@ -262,10 +263,10 @@ export default function ApiKeysPage() {
                       key={scope}
                       type="button"
                       onClick={() => toggleScope(scope)}
-                      className={`p-2 rounded border text-xs font-mono flex items-center justify-between transition-colors ${
+                      className={`p-2.5 rounded-lg border text-xs font-mono flex items-center justify-between transition-colors ${
                         checked
-                          ? "bg-[#d8f99c15] border-[#d8f99c] text-[#d8f99c]"
-                          : "bg-[#0c0e0d] border-[#292d29] text-[#929a8d] hover:text-[#f0f2eb]"
+                          ? "bg-emerald-400/10 border-emerald-400/40 text-emerald-400"
+                          : "bg-stone-950 border-stone-800 text-stone-400 hover:text-stone-200"
                       }`}
                     >
                       <span className="uppercase">{scope}</span>
@@ -276,36 +277,35 @@ export default function ApiKeysPage() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-[#929a8d]">Bucket restriction (optional)</Label>
+            <div>
+              <label className="block text-sm mb-2 text-stone-200">Bucket restriction (optional)</label>
               <select
                 value={newKeyBucket}
                 onChange={(e) => setNewKeyBucket(e.target.value)}
-                className="w-full px-3 py-2 rounded bg-[#0c0e0d] border border-[#292d29] text-[#f0f2eb] font-mono text-xs focus:outline-none focus:border-[#d8f99c]"
+                className="w-full rounded-lg border border-stone-700 bg-stone-900 p-3 text-stone-100 focus:outline-none focus:border-emerald-400 text-sm cursor-pointer"
               >
-                <option value="">All buckets</option>
+                <option value="" className="bg-stone-900 text-stone-400">All buckets (unrestricted)</option>
                 {buckets.map((b) => (
-                  <option key={b.id} value={b.id}>
+                  <option key={b.id} value={b.id} className="bg-stone-900 text-stone-100">
                     {b.name}
                   </option>
                 ))}
               </select>
             </div>
 
-            <DialogFooter className="pt-2">
-              <Button
+            <DialogFooter className="pt-2 flex items-center justify-end gap-3">
+              <button
                 type="button"
-                variant="ghost"
                 onClick={() => setShowCreateModal(false)}
                 disabled={creating}
-                className="text-xs text-[#929a8d] hover:text-[#f0f2eb]"
+                className="px-4 py-2.5 rounded-lg text-sm text-stone-400 hover:text-stone-100 transition-colors"
               >
                 Cancel
-              </Button>
+              </button>
               <button
                 type="submit"
                 disabled={creating || !newKeyName.trim() || newKeyScopes.length === 0}
-                className="action small !py-2 !px-4"
+                className="inline-flex items-center justify-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"
               >
                 {creating ? "Generating…" : "Generate key"}
               </button>
@@ -316,18 +316,18 @@ export default function ApiKeysPage() {
 
       {/* SECRET REVEAL DIALOG */}
       <Dialog open={showSecretModal} onOpenChange={setShowSecretModal}>
-        <DialogContent className="bg-[#111411] border-[#292d29] text-[#f0f2eb] sm:max-w-md rounded-lg p-6">
+        <DialogContent className="bg-stone-900 border border-stone-800 text-stone-100 sm:max-w-md rounded-lg p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-medium text-[#f0f2eb]">Key generated</DialogTitle>
-            <DialogDescription className="text-xs text-[#929a8d]">
+            <DialogTitle className="text-xl font-semibold tracking-tight text-stone-100">Key generated</DialogTitle>
+            <DialogDescription className="text-sm text-stone-400 mt-1">
               Copy this API key now. You will not be able to view it again.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 pt-2">
-            <div className="p-3 rounded bg-[#0c0e0d] border border-[#292d29] space-y-2">
+            <div className="p-3 rounded-lg bg-stone-950 border border-stone-800 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <code className="font-mono text-xs text-[#d8f99c] break-all select-all flex-1">
+                <code className="font-mono text-xs text-emerald-400 break-all select-all flex-1">
                   {revealedSecret}
                 </code>
                 <button
@@ -339,7 +339,7 @@ export default function ApiKeysPage() {
                       setTimeout(() => setCopiedSecret(false), 2000);
                     }
                   }}
-                  className="action small !py-1 !px-3 shrink-0"
+                  className="inline-flex items-center gap-1.5 bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-3 py-1 rounded text-xs transition-colors shrink-0"
                 >
                   {copiedSecret ? <Check size={12} /> : <Copy size={12} />}
                   {copiedSecret ? "Copied" : "Copy"}
@@ -348,8 +348,8 @@ export default function ApiKeysPage() {
             </div>
 
             <div className="space-y-1">
-              <span className="muted">CODE EXAMPLE</span>
-              <div className="rounded bg-[#0c0e0d] border border-[#292d29] p-3 font-mono text-[11px] text-[#929a8d] overflow-x-auto">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Code Example</span>
+              <div className="rounded-lg bg-stone-950 border border-stone-800 p-3 font-mono text-xs text-stone-300 overflow-x-auto">
                 <pre>{`import { BYOSClient } from "byos-sdk";
 
 const byos = new BYOSClient({
@@ -361,12 +361,12 @@ const byos = new BYOSClient({
           </div>
 
           <DialogFooter className="pt-2">
-            <Button
+            <button
               onClick={() => setShowSecretModal(false)}
-              className="text-xs bg-[#242a22] text-[#f0f2eb] hover:bg-[#2d342a] rounded px-4 py-1.5"
+              className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
             >
               Done
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

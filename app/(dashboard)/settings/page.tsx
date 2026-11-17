@@ -72,14 +72,14 @@ export default function SettingsPage() {
 
   if (!loading && !overview) {
     return (
-      <div className="p-8 border border-[#292d29] rounded-lg bg-[#111411] text-center max-w-md mx-auto my-12">
-        <h3 className="text-lg font-medium text-[#f0f2eb]">Unable to load settings</h3>
-        <p className="text-xs text-[#929a8d] mt-2 mb-4">
+      <div className="p-8 border border-stone-800 rounded-lg bg-stone-900 text-center max-w-md mx-auto my-12">
+        <h3 className="text-lg font-medium text-stone-100">Unable to load settings</h3>
+        <p className="text-sm text-stone-400 mt-2 mb-4">
           Check your connection and sign in again.
         </p>
         <button
           onClick={() => fetchOverview()}
-          className="action small"
+          className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
         >
           Try again
         </button>
@@ -90,9 +90,9 @@ export default function SettingsPage() {
   if (loading || !overview) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-6 w-36 bg-[#161a16]" />
-        <Skeleton className="h-44 w-full bg-[#161a16] rounded-lg" />
-        <Skeleton className="h-44 w-full bg-[#161a16] rounded-lg" />
+        <Skeleton className="h-8 w-36 bg-stone-900" />
+        <Skeleton className="h-44 w-full bg-stone-900 rounded-lg" />
+        <Skeleton className="h-44 w-full bg-stone-900 rounded-lg" />
       </div>
     );
   }
@@ -102,28 +102,28 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 max-w-4xl">
       {/* HEADING */}
-      <div className="preview-heading">
-        <div>
-          <span className="muted">PREFERENCES & STORAGE</span>
-          <h3>Settings</h3>
-        </div>
+      <div>
+        <h1 className="text-3xl tracking-tight font-semibold text-stone-100">Settings</h1>
+        <p className="mt-1 text-sm text-stone-400">Manage storage provider connections and workspace subscription limits.</p>
       </div>
 
       {/* STORAGE CONNECTION SECTION */}
-      <div className="border border-[#292d29] rounded-lg bg-[#111411] p-6 space-y-5">
+      <div className="border border-stone-800 rounded-lg bg-stone-900 p-6 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-lg bg-[#1a2018] flex items-center justify-center text-[#d8f99c] shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-stone-950 border border-stone-800 flex items-center justify-center text-emerald-400 shrink-0">
               <HardDrive size={20} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-[#f0f2eb]">Google Drive</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0c0e0d] border border-[#292d29] text-[#929a8d]">
+                <span className="text-base font-medium text-stone-100">Google Drive</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  isConnected ? "bg-emerald-400/10 text-emerald-400" : "bg-stone-800 text-stone-400"
+                }`}>
                   {isConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
-              <p className="text-xs text-[#929a8d] mt-0.5">
+              <p className="text-sm text-stone-400 mt-0.5">
                 {isConnected
                   ? overview.connection.email
                   : "Connect your Google account to store files."}
@@ -136,7 +136,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="text-xs border border-[#292d29] hover:border-rose-500/40 text-[#929a8d] hover:text-rose-400 rounded px-3 py-1.5 flex items-center gap-1.5 transition-colors"
+                className="text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors"
               >
                 <LogOut size={13} />
                 {disconnecting ? "Disconnecting…" : "Disconnect"}
@@ -144,15 +144,15 @@ export default function SettingsPage() {
             ) : (
               <a
                 href="/api/auth/google/connect"
-                className="action small"
+                className="inline-flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
               >
-                <HardDrive size={13} /> Connect Drive <ArrowUpRight size={13} />
+                <HardDrive size={15} /> Connect Drive <ArrowUpRight size={14} />
               </a>
             )}
           </div>
         </div>
 
-        <div className="pt-4 border-t border-[#242a22] text-xs text-[#929a8d] space-y-1">
+        <div className="pt-4 border-t border-stone-800/80 text-xs text-stone-400 space-y-1">
           <span className="text-stone-300 font-medium block">Your files stay in your Google Drive</span>
           <p>
             Disconnecting removes the API session, but does not delete any of your files. All buckets and objects remain in your Google Drive.
@@ -161,21 +161,21 @@ export default function SettingsPage() {
       </div>
 
       {/* ACCOUNT PLAN SECTION */}
-      <div className="border border-[#292d29] rounded-lg bg-[#111411] p-6 space-y-4">
+      <div className="border border-stone-800 rounded-lg bg-stone-900 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <span className="muted">SUBSCRIPTION</span>
-            <h4 className="text-sm font-medium text-[#f0f2eb] mt-1">Plan and limits</h4>
+            <h4 className="text-base font-medium text-stone-100">Subscription & limits</h4>
+            <p className="text-sm text-stone-400 mt-0.5">Current quota and entitlement tier</p>
           </div>
-          <span className="text-xs font-mono uppercase px-2 py-0.5 rounded bg-[#0c0e0d] border border-[#292d29] text-[#d8f99c]">
+          <span className="text-xs font-mono uppercase px-2.5 py-1 rounded-full bg-emerald-400/10 text-emerald-400 font-medium">
             {overview.user.plan} plan
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-          <div className="p-4 rounded border border-[#242a22] bg-[#0c0e0d] space-y-2">
-            <span className="font-medium text-[#f0f2eb] block">Free plan</span>
-            <ul className="space-y-1 text-[#929a8d]">
+          <div className="p-4 rounded-lg border border-stone-800 bg-stone-950 space-y-2">
+            <span className="font-medium text-stone-100 text-sm block">Free plan</span>
+            <ul className="space-y-1.5 text-stone-400 text-xs">
               <li>• 1 storage bucket</li>
               <li>• 20 active API keys</li>
               <li>• 100 requests/minute</li>
@@ -183,9 +183,9 @@ export default function SettingsPage() {
             </ul>
           </div>
 
-          <div className="p-4 rounded border border-[#242a22] bg-[#0c0e0d] space-y-2">
-            <span className="font-medium text-[#f0f2eb] block">Pro plan</span>
-            <ul className="space-y-1 text-[#929a8d]">
+          <div className="p-4 rounded-lg border border-stone-800 bg-stone-950 space-y-2">
+            <span className="font-medium text-stone-100 text-sm block">Pro plan</span>
+            <ul className="space-y-1.5 text-stone-400 text-xs">
               <li>• Unlimited storage buckets</li>
               <li>• Unlimited active API keys</li>
               <li>• 1,000 requests/minute</li>
