@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const sessionUser = await getDashboardSessionUser(request);
-  const userId = sessionUser ? sessionUser.id : "00000000-0000-0000-0000-000000000000";
+  if (!sessionUser) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  const userId = sessionUser.id;
 
   const statePayload = {
     userId,

@@ -3,17 +3,16 @@ import { db } from "@/lib/db/client";
 import { storageConnections } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { decrypt } from "@/lib/auth/encryption";
+import { getDashboardSessionUser } from "@/lib/auth/session";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  // In a real app, verify the user session. 
-  // For MVP, we'll accept userId from body.
-  let userId: string;
-  try {
-    const body = await request.json();
-    userId = body.userId || "00000000-0000-0000-0000-000000000000";
-  } catch {
-    userId = "00000000-0000-0000-0000-000000000000";
+  const sessionUser = await getDashboardSessionUser(request);
+  if (!sessionUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = sessionUser.id;
 
   const connection = await db.query.storageConnections.findFirst({
     where: and(

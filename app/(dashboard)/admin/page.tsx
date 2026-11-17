@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
-  ShieldAlert,
   Users,
   HardDrive,
   Activity,
   Lock,
   RefreshCw,
   TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,7 +51,7 @@ function formatBytes(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
-export default function OperatorAdminPage() {
+export default function AdminPage() {
   const [data, setData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,11 +69,10 @@ export default function OperatorAdminPage() {
         const json = await res.json();
         setData(json);
       } else {
-        const err = await res.json().catch(() => ({}));
-        setError(err?.error?.message || "Access denied: Operator administrative clearance required.");
+        setError("Access denied.");
       }
     } catch {
-      setError("Network fault while retrieving operator telemetry from backend.");
+      setError("Network error while retrieving telemetry.");
     } finally {
       setLoading(false);
     }
@@ -80,36 +80,40 @@ export default function OperatorAdminPage() {
 
   if (loading) {
     return (
-      <div className="space-y-8 max-w-7xl mx-auto pb-16">
-        <div className="flex justify-between pb-6 border-b border-stone-800">
+      <div className="space-y-8 max-w-6xl mx-auto pb-16">
+        <div className="flex justify-between pb-6 border-b border-stone-800/80">
           <div className="space-y-2">
-            <Skeleton className="h-8 w-64 bg-stone-900" />
-            <Skeleton className="h-4 w-96 bg-stone-900" />
+            <Skeleton className="h-7 w-48 bg-stone-900" />
+            <Skeleton className="h-4 w-72 bg-stone-900" />
           </div>
-          <Skeleton className="h-10 w-48 bg-stone-900 rounded-xl" />
+          <Skeleton className="h-9 w-32 bg-stone-900 rounded-lg" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Skeleton className="h-32 w-full bg-stone-900 rounded-2xl" />
-          <Skeleton className="h-32 w-full bg-stone-900 rounded-2xl" />
-          <Skeleton className="h-32 w-full bg-stone-900 rounded-2xl" />
-          <Skeleton className="h-32 w-full bg-stone-900 rounded-2xl" />
+          <Skeleton className="h-32 w-full bg-stone-900 rounded-xl" />
+          <Skeleton className="h-32 w-full bg-stone-900 rounded-xl" />
+          <Skeleton className="h-32 w-full bg-stone-900 rounded-xl" />
+          <Skeleton className="h-32 w-full bg-stone-900 rounded-xl" />
         </div>
-        <Skeleton className="h-80 w-full bg-stone-900 rounded-2xl" />
+        <Skeleton className="h-80 w-full bg-stone-900 rounded-xl" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-rose-950/20 border-2 border-rose-500/40 text-center space-y-4 shadow-[0_0_50px_rgba(244,63,94,0.15)]">
-        <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
-          <Lock className="w-8 h-8" />
+      <div className="max-w-md mx-auto mt-16 p-8 rounded-xl bg-stone-900/40 border border-stone-800 text-center space-y-4">
+        <div className="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center mx-auto text-stone-400">
+          <Lock className="w-5 h-5" />
         </div>
-        <h2 className="text-xl font-extrabold text-white">Operator Access Restricted</h2>
-        <p className="text-stone-300 text-sm font-sans leading-relaxed">{error}</p>
-        <p className="text-[11px] font-mono text-stone-400 pt-2 border-t border-rose-500/20">
-          Tip: Add your email address to the <code className="text-rose-400">ADMIN_EMAILS</code> environment variable inside your <code className="text-rose-400">.env</code> configuration file to unlock this internal operator dashboard.
-        </p>
+        <h2 className="text-lg font-semibold text-white">Access restricted</h2>
+        <p className="text-stone-400 text-xs">You do not have permission to access this page.</p>
+        <div className="pt-2">
+          <Link href="/dashboard">
+            <Button variant="outline" className="text-xs rounded-lg border-stone-800 hover:bg-stone-800 text-stone-300">
+              Return to overview
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -117,138 +121,129 @@ export default function OperatorAdminPage() {
   const { platformTotals, userBreakdowns } = data;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16">
+    <div className="space-y-8 max-w-6xl mx-auto pb-16">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
         <div>
-          <Badge variant="outline" className="px-3 py-1 rounded-full bg-rose-500/10 text-rose-400 border-rose-500/30 text-xs font-mono font-bold uppercase mb-2">
-            <ShieldAlert className="w-3.5 h-3.5 animate-pulse mr-1.5 shrink-0" />
-            Internal Operator Only &mdash; Admin Clearance
-          </Badge>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2.5 mt-1">
-            <span>BYOS Global SaaS Telemetry</span>
+          <h1 className="text-2xl font-semibold text-white tracking-tight flex items-center space-x-2">
+            <ShieldCheck className="w-6 h-6 text-emerald-400" />
+            <span>Platform Telemetry</span>
           </h1>
           <p className="text-stone-400 text-sm mt-1">
-            Aggregate statistics across all user workspaces, cloud storage proxies, and bandwidth throughput.
+            Aggregate statistics across user workspaces and byte throughput.
           </p>
         </div>
 
         <Button
           onClick={fetchAdminStats}
           variant="outline"
-          className="bg-stone-900 border-stone-800 hover:bg-stone-800 text-stone-200 font-mono text-xs font-bold px-4 py-5 rounded-xl self-start md:self-auto"
+          className="border-stone-800 hover:bg-stone-800 text-stone-300 text-xs rounded-lg px-3 py-1.5 self-start md:self-auto"
         >
-          <RefreshCw className="w-4 h-4 mr-2 text-emerald-400 shrink-0" />
-          Refresh Global Telemetry
+          <RefreshCw className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
+          Refresh
         </Button>
       </div>
 
-      {/* OPERATOR HERO STATS GRID */}
+      {/* STATS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-stone-900/80 border-2 border-cyan-500/30 p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(6,182,212,0.1)]">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold text-cyan-300">Registered Users</span>
-            <Users className="w-5 h-5 text-cyan-400" />
+            <span className="text-xs font-mono uppercase">Users</span>
+            <Users className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {platformTotals.totalUsers.toLocaleString()}
           </div>
-          <div className="mt-2 text-[11px] text-stone-400 font-mono">
-            SaaS customer accounts
+          <div className="mt-2 text-xs text-stone-400">
+            Total accounts
           </div>
         </Card>
 
-        <Card className="bg-stone-900/70 border-stone-800 p-6 flex flex-col justify-between">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">Storage Proxied</span>
-            <HardDrive className="w-5 h-5 text-emerald-400" />
+            <span className="text-xs font-mono uppercase">Total Storage</span>
+            <HardDrive className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {formatBytes(platformTotals.totalStorageProxiedBytes)}
           </div>
-          <div className="mt-2 text-[11px] text-emerald-400 font-mono">
-            Across {platformTotals.totalBuckets} total active buckets
+          <div className="mt-2 text-xs text-stone-400">
+            Across {platformTotals.totalBuckets} buckets
           </div>
         </Card>
 
-        <Card className="bg-stone-900/70 border-stone-800 p-6 flex flex-col justify-between">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">Platform Bandwidth</span>
-            <TrendingUp className="w-5 h-5 text-cyan-400" />
+            <span className="text-xs font-mono uppercase">Bandwidth</span>
+            <TrendingUp className="w-4 h-4 text-stone-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {formatBytes(platformTotals.totalBandwidthTransferredBytes)}
           </div>
-          <div className="mt-2 text-[11px] text-stone-400 font-mono">
-            Total historical byte throughput
+          <div className="mt-2 text-xs text-stone-400">
+            Historical throughput
           </div>
         </Card>
 
-        <Card className="bg-stone-900/90 border-2 border-emerald-500/30 p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-emerald-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">Today&apos;s Request Vol</span>
-            <Activity className="w-5 h-5 text-emerald-400" />
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
+          <div className="flex items-center justify-between text-stone-400 mb-2">
+            <span className="text-xs font-mono uppercase">Today&apos;s Requests</span>
+            <Activity className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {platformTotals.totalRequestsToday.toLocaleString()}
           </div>
-          <div className="mt-2 text-[11px] text-emerald-300 font-mono">
-            Translation operations logged today
+          <div className="mt-2 text-xs text-stone-400">
+            Operations logged today
           </div>
         </Card>
       </div>
 
-      {/* GLOBAL USER CONSUMPTION AUDIT TABLE */}
-      <Card className="bg-stone-900/60 border-stone-800 overflow-hidden shadow-sm">
-        <CardHeader className="p-6 bg-stone-900/80 border-b border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 space-y-0">
+      {/* USER AUDIT TABLE */}
+      <Card className="bg-stone-900/40 border-stone-800/80 rounded-xl overflow-hidden">
+        <CardHeader className="p-5 bg-stone-900/60 border-b border-stone-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 space-y-0">
           <div>
-            <CardTitle className="font-extrabold text-white text-base">Registered Account Telemetry</CardTitle>
-            <CardDescription className="text-xs text-stone-400 font-mono mt-0.5">Individual quota consumption, storage footprints, and traffic volume</CardDescription>
+            <CardTitle className="font-medium text-white text-sm">Account Telemetry</CardTitle>
+            <CardDescription className="text-xs text-stone-400 mt-0.5">Quota consumption and activity by user</CardDescription>
           </div>
-          <Badge variant="secondary" className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-cyan-500/10 text-cyan-300 border-cyan-500/30">
-            {userBreakdowns.length} Account Profiles
+          <Badge variant="outline" className="text-xs font-mono bg-stone-800 text-stone-300 border-stone-700">
+            {userBreakdowns.length} Accounts
           </Badge>
         </CardHeader>
         <Table>
-          <TableHeader className="bg-stone-950/80">
-            <TableRow className="border-stone-800 hover:bg-transparent">
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Customer Email & ID</TableHead>
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Subscription Tier</TableHead>
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Buckets / Objects</TableHead>
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Proxied Footprint</TableHead>
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Bandwidth Volume</TableHead>
-              <TableHead className="py-4 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold text-right">API Requests</TableHead>
+          <TableHeader className="bg-[#0c0e0d]">
+            <TableRow className="border-stone-800/80 hover:bg-transparent">
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium">Email</TableHead>
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium">Plan</TableHead>
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium">Buckets / Objects</TableHead>
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium">Storage</TableHead>
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium">Bandwidth</TableHead>
+              <TableHead className="py-3 px-5 text-xs text-stone-400 font-medium text-right">Requests</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-stone-800 text-sm">
+          <TableBody className="divide-y divide-stone-800/60 text-xs">
             {userBreakdowns.map((u) => (
-              <TableRow key={u.id} className="hover:bg-stone-800/50 transition-colors border-stone-800">
-                <TableCell className="py-4 px-6">
-                  <div className="font-extrabold text-white text-sm md:text-base">{u.email}</div>
-                  <div className="text-[11px] text-stone-500 font-mono mt-0.5">ID: {u.id}</div>
+              <TableRow key={u.id} className="hover:bg-stone-900/40 transition-colors border-stone-800/60">
+                <TableCell className="py-3 px-5">
+                  <div className="font-medium text-white">{u.email}</div>
+                  <div className="text-[10px] text-stone-500 font-mono mt-0.5">{u.id}</div>
                 </TableCell>
-                <TableCell className="py-4 px-6">
-                  <Badge variant="outline" className={`text-xs font-mono font-bold uppercase ${
-                    u.plan === "pro"
-                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-                      : "bg-stone-800 text-stone-300 border-stone-700"
-                  }`}>
-                    {u.plan.toUpperCase()} TIER
+                <TableCell className="py-3 px-5">
+                  <Badge variant="outline" className="text-[10px] font-mono uppercase bg-stone-800 text-stone-300 border-stone-700">
+                    {u.plan}
                   </Badge>
                 </TableCell>
-                <TableCell className="py-4 px-6 font-mono text-stone-300">
-                  <span className="font-bold text-white">{u.bucketCount}</span> <span className="text-stone-500 text-xs">buckets</span> /{" "}
-                  <span className="font-bold text-white">{u.objectCount}</span> <span className="text-stone-500 text-xs">files</span>
+                <TableCell className="py-3 px-5 font-mono text-stone-300">
+                  {u.bucketCount} buckets / {u.objectCount} files
                 </TableCell>
-                <TableCell className="py-4 px-6 font-mono font-bold text-emerald-400">
+                <TableCell className="py-3 px-5 font-mono text-emerald-400">
                   {formatBytes(u.storageBytes)}
                 </TableCell>
-                <TableCell className="py-4 px-6 font-mono text-cyan-300">
+                <TableCell className="py-3 px-5 font-mono text-stone-300">
                   {formatBytes(u.bandwidthBytes)}
                 </TableCell>
-                <TableCell className="py-4 px-6 text-right font-mono font-extrabold text-white">
-                  {u.requestCount.toLocaleString()}{" "}
-                  <span className="text-[11px] text-stone-500 font-normal">reqs</span>
+                <TableCell className="py-3 px-5 text-right font-mono font-medium text-white">
+                  {u.requestCount.toLocaleString()}
                 </TableCell>
               </TableRow>
             ))}

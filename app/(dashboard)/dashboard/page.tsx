@@ -3,17 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Server,
-  HardDrive,
+  Folder,
   Copy,
   Check,
   Plus,
-  ArrowRight,
+  ArrowUpRight,
   Database,
-  ShieldAlert,
-  ShieldCheck,
-  Terminal,
-  Layers,
+  HardDrive,
+  KeyRound,
 } from "lucide-react";
 import {
   Card,
@@ -37,7 +34,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GlareCard } from "@/components/ui/glare-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { toast } from "sonner";
 
@@ -68,11 +64,11 @@ interface OverviewData {
   };
 }
 
-function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return "0 Bytes";
+function formatBytes(bytes: number, decimals = 1) {
+  if (!+bytes) return "0 B";
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
@@ -100,8 +96,8 @@ export default function MainDashboardPage() {
         const data = await res.json();
         setOverview(data);
       }
-    } catch (e) {
-      console.error("Failed to load dashboard overview:", e);
+    } catch {
+      // Gracefully handle network error
     } finally {
       setLoading(false);
     }
@@ -110,7 +106,7 @@ export default function MainDashboardPage() {
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopySuccessId(id);
-    toast.success("Copied to clipboard!");
+    toast.success("Copied to clipboard");
     setTimeout(() => setCopySuccessId(null), 2000);
   };
 
@@ -128,20 +124,14 @@ export default function MainDashboardPage() {
       if (res.ok) {
         setNewBucketName("");
         setShowCreateModal(false);
-        toast.success(
-          "Storage bucket provisioned successfully in Google Drive!"
-        );
+        toast.success("Bucket created successfully");
         fetchOverview();
       } else {
-        const err = await res.json();
-        setBucketError(
-          err?.error?.message || "Failed to create bucket in Google Drive."
-        );
+        const err = await res.json().catch(() => ({}));
+        setBucketError(err?.error?.message || "Failed to create bucket");
       }
     } catch {
-      setBucketError(
-        "Network error occurred while communicating with storage engine."
-      );
+      setBucketError("Network error. Please try again.");
     } finally {
       setCreatingBucket(false);
     }
@@ -150,47 +140,46 @@ export default function MainDashboardPage() {
   const baseUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/api/v1/buckets`
-      : "http://localhost:3000/api/v1/buckets";
+      : "/api/v1/buckets";
 
   if (!loading && !overview) {
     return (
       <div
         role="alert"
-        className="rounded-xl border border-stone-800 bg-stone-900 p-8 space-y-4"
+        className="rounded-xl border border-stone-800 bg-stone-900/60 p-8 space-y-4 max-w-xl mx-auto text-center"
       >
-        <h1 className="text-xl">Unable to load this workspace</h1>
-        <p className="text-stone-400">
-          Check your connection and sign-in session, then try again.
+        <h1 className="text-xl font-medium text-white">Unable to load workspace</h1>
+        <p className="text-sm text-stone-400">
+          Please check your connection and sign in again.
         </p>
-        <button
-          onClick={() => fetchOverview()}
-          className="rounded-md bg-emerald-400 text-stone-950 px-4 py-2"
-        >
-          Try again
-        </button>
-        <a href="/login" className="ml-4 underline">
-          Sign in
-        </a>
+        <div className="pt-2">
+          <Button
+            onClick={() => fetchOverview()}
+            className="rounded-lg bg-emerald-400 text-stone-950 font-medium px-4 py-2 hover:bg-emerald-300"
+          >
+            Try again
+          </Button>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="space-y-8 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between pb-6 border-b border-stone-800 gap-4">
+      <div className="space-y-8 max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between pb-6 border-b border-stone-800/80 gap-4">
           <div className="space-y-2">
-            <Skeleton className="h-8 w-64 bg-stone-900" />
-            <Skeleton className="h-4 w-96 bg-stone-900" />
+            <Skeleton className="h-7 w-48 bg-stone-900" />
+            <Skeleton className="h-4 w-72 bg-stone-900" />
           </div>
-          <Skeleton className="h-10 w-48 bg-stone-900 rounded-xl" />
+          <Skeleton className="h-9 w-32 bg-stone-900 rounded-lg" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Skeleton className="h-44 w-full bg-stone-900 rounded-2xl" />
-          <Skeleton className="h-44 w-full bg-stone-900 rounded-2xl" />
-          <Skeleton className="h-44 w-full bg-stone-900 rounded-2xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <Skeleton className="h-36 w-full bg-stone-900 rounded-xl" />
+          <Skeleton className="h-36 w-full bg-stone-900 rounded-xl" />
+          <Skeleton className="h-36 w-full bg-stone-900 rounded-xl" />
         </div>
-        <Skeleton className="h-64 w-full bg-stone-900 rounded-3xl" />
+        <Skeleton className="h-64 w-full bg-stone-900 rounded-xl" />
       </div>
     );
   }
@@ -198,17 +187,15 @@ export default function MainDashboardPage() {
   const isConnected = overview?.connection?.connected;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto">
       {/* HEADER PAGE TITLE */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2.5">
-            <Server className="w-7 h-7 text-emerald-400" />
-            <span>Storage Platform Overview</span>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">
+            Overview
           </h1>
-          <p className="text-stone-400 text-sm mt-1 font-sans">
-            Manage your Google Drive cloud connection, active storage quotas,
-            and S3 API endpoints.
+          <p className="text-stone-400 text-sm mt-1">
+            Your storage workspace at a glance.
           </p>
         </div>
         {isConnected && (
@@ -217,285 +204,215 @@ export default function MainDashboardPage() {
               setBucketError(null);
               setShowCreateModal(true);
             }}
-            className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold shadow-[0_0_20px_rgba(16,185,129,0.3)] rounded-xl px-5 py-2.5"
+            className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 transition-colors self-start md:self-auto"
           >
-            <Plus className="w-4 h-4 mr-2 stroke-[3]" />
-            Provision Storage Bucket
+            <Plus className="w-3.5 h-3.5" />
+            New bucket
           </Button>
         )}
       </div>
 
-      {/* STATE 1: UNCONNECTED DRIVE HERO (Aceternity Glare Card) */}
+      {/* STATE 1: UNCONNECTED DRIVE HERO */}
       {!isConnected && (
-        <div className="max-w-4xl mx-auto">
-          <GlareCard className="flex flex-col items-center text-center space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-semibold uppercase tracking-wider">
-              <ShieldAlert className="w-4 h-4 text-emerald-400" />
-              <span>Action Required: Connect Object Storage Backend</span>
+        <div className="max-w-3xl mx-auto">
+          <Card className="p-8 md:p-10 bg-stone-900/50 border border-stone-800 rounded-2xl text-center space-y-6">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+              <HardDrive className="w-3.5 h-3.5" />
+              <span>Storage setup</span>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white max-w-2xl">
-              Transform your Google Drive into High-Speed S3 Object Storage
-            </h2>
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                Connect your Google Drive
+              </h2>
+              <p className="text-stone-400 text-sm max-w-lg mx-auto leading-relaxed">
+                Link your Google account to create buckets, manage objects, and serve files through the developer API.
+              </p>
+            </div>
 
-            <p className="text-stone-300 text-base max-w-3xl font-sans leading-relaxed">
-              Connect your account to automatically provision an isolated{" "}
-              <strong className="text-emerald-400">BYOS root folder</strong>{" "}
-              inside Google Drive. Our OAuth integration enforces strict
-              zero-trust security: we request read/write privileges{" "}
-              <strong className="text-white">only</strong> for files created by
-              BYOS (
-              <code className="text-xs font-mono bg-stone-900 px-1.5 py-0.5 rounded text-emerald-300">
-                drive.file
-              </code>{" "}
-              scope). You can safely pause or revoke access at any time without
-              deleting existing cloud files.
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-              <a href="/api/auth/google/connect" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto px-8 py-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black text-base shadow-[0_0_30px_rgba(16,185,129,0.4)]"
-                >
-                  <HardDrive className="w-5 h-5 mr-2" />
-                  Connect Google Drive Now
-                  <ArrowRight className="w-5 h-5 ml-2" />
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a href="/api/auth/google/connect">
+                <Button className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium rounded-lg px-6 py-2.5 text-sm flex items-center gap-2">
+                  <HardDrive className="w-4 h-4" />
+                  Connect Google Drive
                 </Button>
               </a>
-              <Link href="/settings" className="w-full sm:w-auto">
+              <Link href="/docs">
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto px-6 py-6 rounded-2xl border-stone-700 bg-stone-900 hover:bg-stone-800 text-stone-200 font-bold"
+                  className="border-stone-700 bg-transparent hover:bg-stone-800 text-stone-300 rounded-lg px-5 py-2.5 text-sm"
                 >
-                  Review Security Protocols
+                  Documentation
                 </Button>
               </Link>
             </div>
 
-            <div className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-stone-800 w-full text-xs text-stone-400">
-              <div className="flex items-start space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-stone-200">
-                    Isolated Folder Only:
-                  </strong>{" "}
-                  Cannot view or edit existing personal spreadsheets, docs, or
-                  photos in your Google Drive.
-                </div>
+            <div className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-stone-800/80 text-xs text-stone-400">
+              <div className="space-y-1">
+                <p className="font-medium text-stone-200">Isolated workspace</p>
+                <p className="text-stone-400">BYOS only accesses files created inside its own root folder.</p>
               </div>
-              <div className="flex items-start space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-stone-200">Zero Egress Fees:</strong>{" "}
-                  Stream gigabytes of video or static objects directly without
-                  AWS bandwidth charges.
-                </div>
+              <div className="space-y-1">
+                <p className="font-medium text-stone-200">Zero egress fees</p>
+                <p className="text-stone-400">Stream and download files directly without cloud bandwidth charges.</p>
               </div>
-              <div className="flex items-start space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-stone-200">
-                    Instant Revocation:
-                  </strong>{" "}
-                  Disconnect any time with 1-click in console or Google account
-                  controls.
-                </div>
+              <div className="space-y-1">
+                <p className="font-medium text-stone-200">Your control</p>
+                <p className="text-stone-400">Pause or disconnect storage at any time from your settings.</p>
               </div>
             </div>
-          </GlareCard>
+          </Card>
         </div>
       )}
 
-      {/* STATE 2: CONNECTED STORAGE METERS & STATISTICS */}
+      {/* STATE 2: CONNECTED STORAGE METERS */}
       {isConnected && (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Connection Health Card */}
-            <Card className="bg-stone-900/60 border-stone-800 flex flex-col justify-between">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between mb-1">
-                  <CardDescription className="font-mono text-xs font-bold uppercase text-stone-400">
-                    Storage Provider
-                  </CardDescription>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {/* Connection Status Card */}
+            <Card className="bg-stone-900/50 border-stone-800/80 rounded-xl p-5 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase text-stone-400">
+                    Storage provider
+                  </span>
                   <Badge
                     variant="outline"
-                    className="bg-stone-800 text-stone-300 border-stone-700 font-mono text-[10px]"
+                    className="bg-stone-800/80 text-stone-300 border-stone-700 text-[10px] font-mono"
                   >
                     Google Drive
                   </Badge>
                 </div>
-                <CardTitle className="text-lg font-bold text-white truncate font-mono">
+                <div className="text-sm font-medium text-white truncate font-mono pt-1">
                   {overview?.connection.email}
-                </CardTitle>
-              </CardHeader>
-              <CardFooter className="pt-3 border-t border-stone-800/80 flex items-center justify-between text-xs text-stone-400 font-mono">
-                <span>
-                  Scope:{" "}
-                  <code className="text-emerald-400 font-bold">drive.file</code>
-                </span>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-stone-800/60 flex items-center justify-between text-xs text-stone-400">
+                <span className="font-mono text-[11px] text-emerald-400">Connected</span>
                 <Link
                   href="/settings"
-                  className="text-cyan-400 hover:text-cyan-300 font-bold underline underline-offset-2"
+                  className="text-stone-400 hover:text-stone-200 transition-colors flex items-center gap-1"
                 >
-                  Manage &rarr;
+                  Settings <ArrowUpRight className="w-3 h-3" />
                 </Link>
-              </CardFooter>
+              </div>
             </Card>
 
-            {/* Storage Quota Progress Bar Card (shadcn Progress) */}
-            <Card className="bg-stone-900/60 border-stone-800 flex flex-col justify-between">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between mb-1">
-                  <CardDescription className="font-mono text-xs font-bold uppercase text-stone-400">
-                    Drive Quota Consumption
-                  </CardDescription>
+            {/* Storage Quota Progress Card */}
+            <Card className="bg-stone-900/50 border-stone-800/80 rounded-xl p-5 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase text-stone-400">
+                    Storage used
+                  </span>
                   <Badge
                     variant="secondary"
-                    className="font-mono text-[10px] uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
+                    className="text-[10px] uppercase font-mono bg-stone-800 text-stone-300"
                   >
-                    {overview?.user.plan.toUpperCase()} TIER
+                    {overview?.user.plan}
                   </Badge>
                 </div>
-                <div className="flex justify-between items-baseline text-sm my-1">
-                  <span className="text-white font-mono font-extrabold text-lg">
+                <div className="flex justify-between items-baseline text-sm pt-1">
+                  <span className="text-white font-mono font-semibold text-lg">
                     {formatBytes(overview?.usage.usedBytes || 0)}
                   </span>
                   <span className="text-stone-400 font-mono text-xs">
-                    of{" "}
-                    {formatBytes(
-                      overview?.usage.limitBytes || 5 * 1024 * 1024 * 1024
-                    )}{" "}
-                    ({overview?.usage.percentage}%)
+                    of {formatBytes(overview?.usage.limitBytes || 15 * 1024 * 1024 * 1024)} ({overview?.usage.percentage}%)
                   </span>
                 </div>
                 <Progress
                   value={Math.max(2, overview?.usage.percentage || 0)}
-                  className="h-2.5 bg-stone-800"
+                  className="h-1.5 bg-stone-800"
                 />
-              </CardHeader>
-              <CardFooter className="pt-3 border-t border-stone-800/80 flex items-center justify-between text-xs text-stone-400 font-mono">
-                <span>
-                  Allowance:{" "}
-                  <strong className="text-stone-200">
-                    {overview?.user.plan === "pro"
-                      ? "Unlimited Buckets"
-                      : "1 Bucket"}
-                  </strong>
-                </span>
+              </div>
+              <div className="pt-4 border-t border-stone-800/60 flex items-center justify-between text-xs text-stone-400">
+                <span className="font-mono text-[11px]">{overview?.buckets.length} active bucket{overview?.buckets.length === 1 ? "" : "s"}</span>
                 <Link
                   href="/objects"
-                  className="text-emerald-400 hover:text-emerald-300 font-bold"
+                  className="text-stone-400 hover:text-stone-200 transition-colors flex items-center gap-1"
                 >
-                  Browse &rarr;
+                  Browse <ArrowUpRight className="w-3 h-3" />
                 </Link>
-              </CardFooter>
+              </div>
             </Card>
 
             {/* API Keys Summary Card */}
-            <Card className="bg-stone-900/60 border-stone-800 flex flex-col justify-between">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between mb-1">
-                  <CardDescription className="font-mono text-xs font-bold uppercase text-stone-400">
-                    API Access Security
-                  </CardDescription>
-                  <Badge
-                    variant="outline"
-                    className="bg-purple-500/10 text-purple-300 border-purple-500/30 font-mono text-[10px] font-bold"
-                  >
-                    Bcrypt Hash
-                  </Badge>
+            <Card className="bg-stone-900/50 border-stone-800/80 rounded-xl p-5 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase text-stone-400">
+                    API keys
+                  </span>
+                  <KeyRound className="w-4 h-4 text-stone-500" />
                 </div>
-                <div className="flex items-center space-x-4 my-2">
-                  <div className="w-11 h-11 rounded-xl bg-stone-900 border border-stone-800 flex items-center justify-center shrink-0">
-                    <Terminal className="w-5 h-5 text-cyan-400" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-extrabold font-mono text-white">
-                      {overview?.usage.activeKeysCount}{" "}
-                      <span className="text-xs font-normal text-stone-400">
-                        Active Keys
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-stone-400">
-                      Max authorized quota:{" "}
-                      <span className="text-stone-200 font-mono font-bold">
-                        {overview?.usage.maxKeys}
-                      </span>
-                    </div>
-                  </div>
+                <div className="text-lg font-semibold font-mono text-white pt-1">
+                  {overview?.usage.activeKeysCount}{" "}
+                  <span className="text-xs font-normal text-stone-400">
+                    active
+                  </span>
                 </div>
-              </CardHeader>
-              <CardFooter className="pt-3 border-t border-stone-800/80 flex items-center justify-between text-xs text-stone-400 font-mono">
-                <span>
-                  SDK:{" "}
-                  <code className="text-stone-300 font-bold">byos-sdk</code>
-                </span>
+              </div>
+              <div className="pt-4 border-t border-stone-800/60 flex items-center justify-between text-xs text-stone-400">
+                <span className="font-mono text-[11px]">byos-sdk</span>
                 <Link
                   href="/keys"
-                  className="text-cyan-400 hover:text-cyan-300 font-bold underline underline-offset-2"
+                  className="text-stone-400 hover:text-stone-200 transition-colors flex items-center gap-1"
                 >
-                  Manage Keys &rarr;
+                  Manage keys <ArrowUpRight className="w-3 h-3" />
                 </Link>
-              </CardFooter>
+              </div>
             </Card>
           </div>
 
-          {/* BUCKETS GRID */}
-          <div className="space-y-4 pt-4">
+          {/* BUCKETS SECTION */}
+          <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-white flex items-center space-x-2">
-                <Database className="w-5 h-5 text-emerald-400" />
-                <span>
-                  Connected Storage Buckets ({overview?.buckets.length})
-                </span>
+              <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                <Database className="w-4 h-4 text-emerald-400" />
+                <span>Buckets</span>
+                <span className="text-xs text-stone-500 font-mono">({overview?.buckets.length})</span>
               </h2>
-              <span className="text-xs text-stone-400 font-mono hidden md:inline">
-                Each bucket maps to a root folder in your Drive
-              </span>
             </div>
 
             {overview?.buckets.length === 0 ? (
               <EmptyState
-                title="No active storage buckets provisioned yet"
-                description="Click below to instantiate your initial bucket. A designated folder will be created immediately within your Google Drive."
-                icon={<Layers className="w-8 h-8 text-stone-500" />}
-                badgeText="Ready for creation"
+                title="No buckets yet"
+                description="Create a bucket to begin organizing files in your connected Google Drive."
+                icon={<Folder className="w-7 h-7 text-stone-500" />}
+                badgeText="Ready"
                 action={
                   <Button
                     onClick={() => setShowCreateModal(true)}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold px-6 py-5 rounded-xl text-sm shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                    className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium px-4 py-2 rounded-lg text-xs"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create First Bucket
+                    <Plus className="w-3.5 h-3.5 mr-1.5" />
+                    Create bucket
                   </Button>
                 }
               />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {overview?.buckets.map((b) => {
                   const bucketEndpoint = `${baseUrl}/${b.name}/objects`;
                   return (
                     <Card
                       key={b.id}
-                      className="bg-stone-900/70 border-stone-800 hover:border-stone-700 transition-all flex flex-col justify-between shadow-md"
+                      className="bg-stone-900/50 border-stone-800/80 rounded-xl p-5 hover:border-stone-700 transition-colors flex flex-col justify-between"
                     >
-                      <CardContent className="p-6 space-y-5">
+                      <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-xl bg-stone-800 border border-stone-700 flex items-center justify-center font-mono text-emerald-400 text-base">
-                              🗂️
+                            <div className="w-9 h-9 rounded-lg bg-stone-800 border border-stone-700/80 flex items-center justify-center text-stone-300">
+                              <Folder className="w-4 h-4 text-emerald-400" />
                             </div>
                             <div>
                               <Link
                                 href={`/objects?bucket=${b.name}`}
-                                className="font-extrabold text-white text-lg hover:text-emerald-400 transition-colors"
+                                className="font-medium text-white text-base hover:text-emerald-400 transition-colors"
                               >
                                 {b.name}
                               </Link>
-                              <div className="text-[11px] text-stone-400 font-mono">
-                                Created{" "}
+                              <div className="text-[11px] text-stone-500 font-mono">
                                 {new Date(b.createdAt).toLocaleDateString()}
                               </div>
                             </div>
@@ -504,87 +421,45 @@ export default function MainDashboardPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="bg-stone-900 border-stone-700 hover:bg-stone-800 text-stone-200 font-bold text-xs"
+                              className="border-stone-800 hover:bg-stone-800 text-stone-300 text-xs rounded-lg"
                             >
-                              Explore ({b.objectCount})
-                              <ArrowRight className="w-3 h-3 ml-1" />
+                              Explore
                             </Button>
                           </Link>
                         </div>
 
-                        {/* Stats mini grid */}
-                        <div className="grid grid-cols-2 gap-2 bg-stone-950 p-3 rounded-xl border border-stone-800">
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 gap-2 bg-[#0c0e0d] p-3 rounded-lg border border-stone-800/60 text-xs">
                           <div>
-                            <div className="text-[10px] uppercase font-mono font-semibold text-stone-400">
-                              Total Objects
-                            </div>
-                            <div className="text-sm font-bold font-mono text-white">
-                              {b.objectCount} Files
-                            </div>
+                            <span className="text-[10px] uppercase font-mono text-stone-500 block">Objects</span>
+                            <span className="font-mono font-medium text-white">{b.objectCount}</span>
                           </div>
                           <div>
-                            <div className="text-[10px] uppercase font-mono font-semibold text-stone-400">
-                              Storage Size
-                            </div>
-                            <div className="text-sm font-bold font-mono text-emerald-400">
-                              {formatBytes(b.sizeBytes)}
-                            </div>
+                            <span className="text-[10px] uppercase font-mono text-stone-500 block">Size</span>
+                            <span className="font-mono font-medium text-emerald-400">{formatBytes(b.sizeBytes)}</span>
                           </div>
                         </div>
 
-                        {/* Quick Copy Snippets */}
-                        <div className="space-y-3 pt-2 border-t border-stone-800/80 text-xs">
-                          <div>
-                            <div className="text-[10px] font-mono font-semibold uppercase text-stone-400 mb-1">
-                              Bucket Identifier & Drive Folder ID
-                            </div>
-                            <div className="flex items-center justify-between bg-stone-950 p-2.5 rounded-lg border border-stone-800 font-mono text-cyan-300 text-[11px] truncate">
-                              <span className="truncate flex-1">
-                                {b.providerFolderId}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  handleCopy(b.providerFolderId, `id-${b.id}`)
-                                }
-                                className="h-6 w-6 text-stone-400 hover:text-white shrink-0 ml-2"
-                              >
-                                {copySuccessId === `id-${b.id}` ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="text-[10px] font-mono font-semibold uppercase text-stone-400 mb-1">
-                              REST API Base URL Endpoint
-                            </div>
-                            <div className="flex items-center justify-between bg-stone-950 p-2.5 rounded-lg border border-stone-800 font-mono text-emerald-300 text-[11px] truncate">
-                              <span className="truncate flex-1">
-                                {bucketEndpoint}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  handleCopy(bucketEndpoint, `url-${b.id}`)
-                                }
-                                className="h-6 w-6 text-stone-400 hover:text-white shrink-0 ml-2"
-                              >
-                                {copySuccessId === `url-${b.id}` ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </Button>
-                            </div>
+                        {/* Copy Endpoint */}
+                        <div className="space-y-1.5 pt-1 text-xs">
+                          <span className="text-[10px] font-mono uppercase text-stone-500">API Endpoint</span>
+                          <div className="flex items-center justify-between bg-[#0c0e0d] px-2.5 py-1.5 rounded-lg border border-stone-800/60 font-mono text-stone-300 text-[11px] truncate">
+                            <span className="truncate flex-1">{bucketEndpoint}</span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleCopy(bucketEndpoint, `url-${b.id}`)}
+                              className="h-5 w-5 text-stone-500 hover:text-white shrink-0 ml-2"
+                            >
+                              {copySuccessId === `url-${b.id}` ? (
+                                <Check className="w-3 h-3 text-emerald-400" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </Button>
                           </div>
                         </div>
-                      </CardContent>
+                      </div>
                     </Card>
                   );
                 })}
@@ -594,52 +469,37 @@ export default function MainDashboardPage() {
         </>
       )}
 
-      {/* CREATE BUCKET SHADCN DIALOG */}
+      {/* CREATE BUCKET DIALOG */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="bg-stone-950 border-stone-800 text-stone-100 sm:max-w-md rounded-2xl p-6">
+        <DialogContent className="bg-[#0c0e0d] border-stone-800 text-stone-100 sm:max-w-md rounded-xl p-6">
           <DialogHeader>
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                <Plus className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div>
-                <DialogTitle className="text-lg font-extrabold text-white">
-                  Provision New Bucket
-                </DialogTitle>
-                <DialogDescription className="text-xs text-stone-400">
-                  Creates a matching folder directly in Google Drive
-                </DialogDescription>
-              </div>
-            </div>
+            <DialogTitle className="text-base font-semibold text-white">
+              New bucket
+            </DialogTitle>
+            <DialogDescription className="text-xs text-stone-400">
+              A corresponding folder will be created in your Google Drive.
+            </DialogDescription>
           </DialogHeader>
 
           {bucketError && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center space-x-2">
-              <span>⚠️ {bucketError}</span>
+            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+              {bucketError}
             </div>
           )}
 
-          <form onSubmit={handleCreateBucket} className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-stone-300">
-                Bucket Name (lowercase alphanumeric & hyphens)
+          <form onSubmit={handleCreateBucket} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-stone-300">
+                Bucket name
               </Label>
               <Input
                 type="text"
                 required
-                placeholder="e.g., prod-media-uploads"
+                placeholder="e.g. app-assets"
                 value={newBucketName}
                 onChange={(e) => setNewBucketName(e.target.value.toLowerCase())}
-                className="bg-stone-900 border-stone-800 text-white font-mono text-sm focus-visible:ring-emerald-500 rounded-xl"
+                className="bg-stone-900 border-stone-800 text-white font-mono text-sm focus-visible:ring-emerald-400 rounded-lg"
               />
-            </div>
-
-            <div className="text-[11px] text-stone-400 bg-stone-900/60 p-3 rounded-xl border border-stone-800 leading-relaxed">
-              💡{" "}
-              <strong className="text-stone-300">Storage Architecture:</strong>{" "}
-              Buckets map directly to isolated subdirectories inside your
-              connected Google Drive workspace without intermediary staging
-              servers.
             </div>
 
             <DialogFooter className="pt-2">
@@ -648,16 +508,16 @@ export default function MainDashboardPage() {
                 variant="ghost"
                 onClick={() => setShowCreateModal(false)}
                 disabled={creatingBucket}
-                className="rounded-xl text-stone-300"
+                className="rounded-lg text-stone-400 hover:text-stone-200 text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={creatingBucket || !newBucketName.trim()}
-                className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold rounded-xl px-5 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium rounded-lg px-4 text-xs"
               >
-                {creatingBucket ? "Provisioning..." : "Create Bucket"}
+                {creatingBucket ? "Creating…" : "Create bucket"}
               </Button>
             </DialogFooter>
           </form>

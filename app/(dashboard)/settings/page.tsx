@@ -5,12 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   Settings,
   HardDrive,
-  CheckCircle,
-  AlertTriangle,
-  Zap,
-  DollarSign,
-  Lock,
   LogOut,
+  CreditCard,
+  ShieldCheck,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,8 +38,8 @@ export default function SettingsPage() {
         const data = await res.json();
         setOverview(data);
       }
-    } catch (e) {
-      console.error("Error fetching settings profile:", e);
+    } catch {
+      // Graceful error handling
     } finally {
       setLoading(false);
     }
@@ -51,7 +48,7 @@ export default function SettingsPage() {
   const handleDisconnect = async () => {
     if (
       !confirm(
-        "Are you certain you wish to pause storage access and disconnect Google Drive? Your existing files will remain fully intact inside your personal Google Drive."
+        "Are you sure you want to disconnect Google Drive? Your files will remain intact in your Google Drive."
       )
     ) {
       return;
@@ -61,21 +58,17 @@ export default function SettingsPage() {
       const res = await fetch("/api/auth/google/disconnect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: overview?.user.id || "00000000-0000-0000-0000-000000000000",
-        }),
+        body: JSON.stringify({}),
       });
       if (res.ok) {
-        toast.success(
-          "Google Drive disconnected cleanly! Developer API operations have been paused."
-        );
+        toast.success("Google Drive disconnected");
         fetchOverview();
         router.refresh();
       } else {
-        toast.error("Disconnect operation encountered an error.");
+        toast.error("Failed to disconnect Google Drive");
       }
     } catch {
-      toast.error("Network exception communicating with disconnect endpoint.");
+      toast.error("Network error");
     } finally {
       setDisconnecting(false);
     }
@@ -85,69 +78,62 @@ export default function SettingsPage() {
     return (
       <div
         role="alert"
-        className="rounded-xl border border-stone-800 bg-stone-900 p-8 space-y-4"
+        className="rounded-xl border border-stone-800 bg-stone-900/60 p-8 space-y-4 max-w-xl mx-auto text-center"
       >
-        <h1 className="text-xl">Unable to load this workspace</h1>
-        <p className="text-stone-400">
-          Check your connection and sign-in session, then try again.
+        <h1 className="text-xl font-medium text-white">Unable to load settings</h1>
+        <p className="text-sm text-stone-400">
+          Check your connection and sign in again.
         </p>
-        <button
+        <Button
           onClick={() => fetchOverview()}
-          className="rounded-md bg-emerald-400 text-stone-950 px-4 py-2"
+          className="rounded-lg bg-emerald-400 text-stone-950 px-4 py-2 text-xs font-medium"
         >
           Try again
-        </button>
-        <a href="/login" className="ml-4 underline">
-          Sign in
-        </a>
+        </Button>
       </div>
     );
   }
 
-  if (loading) {
+  if (loading || !overview) {
     return (
-      <div className="space-y-8 max-w-5xl mx-auto pb-16">
-        <div className="pb-6 border-b border-stone-800 space-y-2">
-          <Skeleton className="h-8 w-72 bg-stone-900" />
-          <Skeleton className="h-4 w-96 bg-stone-900" />
-        </div>
-        <Skeleton className="h-64 w-full bg-stone-900 rounded-3xl" />
-        <Skeleton className="h-64 w-full bg-stone-900 rounded-3xl" />
+      <div className="space-y-6 max-w-4xl mx-auto pb-12">
+        <Skeleton className="h-8 w-48 bg-stone-900 rounded-lg" />
+        <Skeleton className="h-64 w-full bg-stone-900 rounded-xl" />
+        <Skeleton className="h-64 w-full bg-stone-900 rounded-xl" />
       </div>
     );
   }
 
-  const isConnected = overview?.connection?.connected;
+  const isConnected = overview.connection.connected;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-16">
-      {/* HEADER */}
-      <div className="border-b border-stone-800 pb-6">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2.5">
-          <Settings className="w-7 h-7 text-emerald-400 shrink-0" />
-          <span>Storage Connection & Account Settings</span>
+    <div className="space-y-8 max-w-4xl mx-auto pb-12">
+      {/* HEADER SECTION */}
+      <div className="border-b border-stone-800/80 pb-6">
+        <h1 className="text-2xl font-semibold text-white tracking-tight flex items-center space-x-2.5">
+          <Settings className="w-6 h-6 text-emerald-400" />
+          <span>Settings</span>
         </h1>
         <p className="text-stone-400 text-sm mt-1">
-          Manage your Google OAuth token bindings, privacy guarantees, and SaaS
-          subscription tiers.
+          Connected storage, account plan, and credentials.
         </p>
       </div>
 
-      {/* STORAGE PROVIDER CONNECTION CARD */}
-      <Card className="p-6 md:p-8 rounded-3xl border-stone-800 bg-stone-900/60 space-y-6 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 rounded-2xl bg-stone-900 border border-emerald-500/30 flex items-center justify-center shadow-md shrink-0">
-              <HardDrive className="w-7 h-7 text-emerald-400" />
+      {/* STORAGE CONNECTION CARD */}
+      <Card className="p-6 rounded-xl border-stone-800/80 bg-stone-900/40 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800/80 pb-5">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-emerald-400 shrink-0">
+              <HardDrive className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="font-semibold text-white text-base">
-                  Google Drive Storage
+                <h2 className="text-base font-medium text-white">
+                  Google Drive
                 </h2>
                 <Badge
                   variant="outline"
-                  className={`text-[11px] font-mono font-medium ${
+                  className={`text-[10px] font-mono ${
                     isConnected
                       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                       : "bg-stone-800 text-stone-400 border-stone-700"
@@ -156,10 +142,10 @@ export default function SettingsPage() {
                   {isConnected ? "Connected" : "Disconnected"}
                 </Badge>
               </div>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-stone-400 mt-0.5">
                 {isConnected
-                  ? `Connected account: ${overview?.connection.email}`
-                  : "Not currently connected to Google Drive"}
+                  ? overview.connection.email
+                  : "Connect your Google account to store files."}
               </p>
             </div>
           </div>
@@ -170,162 +156,100 @@ export default function SettingsPage() {
                 variant="outline"
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="bg-stone-900 hover:bg-stone-800 text-rose-400 border-stone-800 text-xs font-medium rounded-lg px-4 py-2"
+                className="border-stone-800 hover:bg-stone-800 text-stone-300 hover:text-rose-400 text-xs rounded-lg px-3 py-1.5"
               >
-                <LogOut className="w-3.5 h-3.5 mr-2 shrink-0" />
-                {disconnecting ? "Disconnecting..." : "Disconnect"}
+                <LogOut className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                {disconnecting ? "Disconnecting…" : "Disconnect"}
               </Button>
             ) : (
               <a
                 href="/api/auth/google/connect"
-                className="inline-flex items-center px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold text-xs space-x-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium text-xs space-x-1.5 transition-colors"
               >
-                <Zap className="w-4 h-4 shrink-0 fill-current" />
-                <span>Connect Google Drive Now</span>
+                <HardDrive className="w-3.5 h-3.5 shrink-0" />
+                <span>Connect Google Drive</span>
               </a>
             )}
           </div>
         </div>
 
-        {/* ZERO-DELETION GUARANTEE ALERT BOX */}
-        <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2 font-sans">
-          <div className="font-extrabold text-amber-300 text-sm flex items-center space-x-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>⚠️ Safe Disconnection & Zero-Deletion Guarantee</span>
-          </div>
-          <p className="leading-relaxed text-stone-300">
-            Unlinking your account revokes BYOS developer OAuth tokens
-            immediately, pausing programmatic S3 Read/Write operations.{" "}
-            <strong className="text-white underline decoration-amber-500">
-              Nothing gets deleted from your cloud account!
-            </strong>{" "}
-            Every file and folder provisioned by BYOS remains completely intact
-            and accessible inside your personal Google Drive via standard web or
-            desktop apps. You can safely reconnect or pause access whenever you
-            wish.
+        {/* SAFE DISCONNECTION NOTE */}
+        <div className="p-4 rounded-lg bg-stone-900/60 border border-stone-800 text-xs text-stone-400 space-y-1">
+          <p className="font-medium text-stone-300">Your files remain in Google Drive</p>
+          <p className="leading-relaxed">
+            Disconnecting removes the OAuth tokens used for API access, but does not delete any files. Everything created by BYOS remains in your Google Drive and accessible anytime.
           </p>
         </div>
 
-        {/* SECURITY & PRIVACY BULLETS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 font-mono text-xs">
-          <div className="p-4 rounded-2xl bg-stone-950/80 border border-stone-800 space-y-2">
-            <div className="text-emerald-400 font-bold flex items-center space-x-2">
-              <Lock className="w-4 h-4 shrink-0" />
-              <span>Restricted Scope Encryption</span>
+        {/* SECURITY & PRIVACY */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
+          <div className="p-3.5 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-1">
+            <div className="text-emerald-400 font-medium flex items-center space-x-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+              <span>Isolated scope</span>
             </div>
-            <p className="text-stone-400 text-[11px] font-sans">
-              Tokens are encrypted at rest using AES-256-GCM. We never request
-              full Google Drive authorization—our access is strictly scoped to{" "}
-              <code className="text-cyan-300">
-                https://www.googleapis.com/auth/drive.file
-              </code>
-              .
+            <p className="text-stone-400 text-[11px] leading-relaxed">
+              Access is limited to the <code className="text-stone-300 font-mono">drive.file</code> scope. BYOS cannot access other files in your Drive.
             </p>
           </div>
-          <div className="p-4 rounded-2xl bg-stone-950/80 border border-stone-800 space-y-2">
-            <div className="text-cyan-400 font-bold flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 shrink-0" />
-              <span>Real-Time Egress & Latency</span>
+          <div className="p-3.5 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-1">
+            <div className="text-emerald-400 font-medium flex items-center space-x-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+              <span>Direct transfers</span>
             </div>
-            <p className="text-stone-400 text-[11px] font-sans">
-              Direct streaming architectures bypass proxy servers during uploads
-              and downloads via signed transfer tokens, eliminating AWS
-              bandwidth costs and optimizing throughput.
+            <p className="text-stone-400 text-[11px] leading-relaxed">
+              Files are transferred directly using signed URLs, with no intermediate storage proxies or egress fees.
             </p>
           </div>
         </div>
       </Card>
 
-      {/* ACCOUNT TIER & MONETIZATION SUBSCRIPTION */}
-      <Card className="p-6 md:p-8 rounded-3xl border-stone-800 bg-stone-900/60 space-y-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+      {/* ACCOUNT PLAN */}
+      <Card className="p-6 rounded-xl border-stone-800/80 bg-stone-900/40 space-y-5">
+        <div className="flex items-center justify-between border-b border-stone-800/80 pb-4">
           <div className="flex items-center space-x-3">
-            <DollarSign className="w-6 h-6 text-cyan-400 shrink-0" />
+            <CreditCard className="w-5 h-5 text-emerald-400 shrink-0" />
             <div>
-              <h2 className="font-extrabold text-white text-lg">
-                Platform Plan & Quotas
+              <h2 className="font-medium text-white text-base">
+                Plan & limits
               </h2>
               <p className="text-xs text-stone-400">
-                SaaS usage monetization, API rate limiting, and volume limits
+                Your current workspace tier and quotas.
               </p>
             </div>
           </div>
           <Badge
             variant="outline"
-            className="px-3.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border-cyan-500/30 text-xs font-mono font-extrabold uppercase"
+            className="px-2.5 py-0.5 rounded-md bg-stone-800 text-stone-300 border-stone-700 text-xs font-mono uppercase"
           >
-            Current Tier: {overview?.user.plan.toUpperCase()} PLAN
+            {overview.user.plan}
           </Badge>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-sans">
-          {/* Free Tier Details */}
-          <div className="p-6 rounded-2xl bg-stone-950/60 border border-stone-800 space-y-4">
-            <div className="flex justify-between items-center font-bold text-stone-300 text-sm">
-              <span>Free Developer Tier</span>
-              <span className="text-stone-500">$0 / mo</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="p-4 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-3">
+            <div className="flex justify-between items-center font-medium text-stone-300">
+              <span>Free tier</span>
+              <span className="text-stone-500">$0/mo</span>
             </div>
-            <ul className="space-y-2.5 text-stone-400">
-              <li className="flex items-center space-x-2">
-                <span>
-                  ▪️ Max Storage Buckets:{" "}
-                  <strong className="text-stone-200">1 Bucket</strong>
-                </span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <span>
-                  ▪️ Active API Keys Quota:{" "}
-                  <strong className="text-stone-200">20 Keys</strong>
-                </span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <span>
-                  ▪️ Rate Limit Protection:{" "}
-                  <strong className="text-stone-200">100 req / minute</strong>
-                </span>
-              </li>
+            <ul className="space-y-1.5 text-stone-400">
+              <li>1 storage bucket</li>
+              <li>20 active API keys</li>
+              <li>Standard rate limits (100 req/min)</li>
+              <li>Google Drive storage limit applies</li>
             </ul>
           </div>
 
-          {/* PRO Tier Details */}
-          <div className="p-6 rounded-2xl bg-stone-950 border-2 border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.1)] space-y-4 relative overflow-hidden">
-            <div className="absolute top-3 right-3 px-2 py-0.5 rounded text-[9px] bg-emerald-500 text-stone-950 font-extrabold font-mono uppercase">
-              Your Active Plan
+          <div className="p-4 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-3">
+            <div className="flex justify-between items-center font-medium text-stone-300">
+              <span>Pro tier</span>
+              <span className="text-emerald-400">Upgrade</span>
             </div>
-            <div className="font-extrabold text-emerald-300 text-base flex items-center space-x-1.5">
-              <span>PRO Enterprise Unlimited</span>
-              <span className="text-xs text-stone-400 font-normal">
-                ($19 / mo)
-              </span>
-            </div>
-            <ul className="space-y-2.5 text-stone-200 font-medium">
-              <li className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>
-                  Max Storage Buckets:{" "}
-                  <strong className="text-white font-extrabold">
-                    UNLIMITED
-                  </strong>
-                </span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>
-                  Active API Keys Quota:{" "}
-                  <strong className="text-white font-extrabold">
-                    UNLIMITED
-                  </strong>
-                </span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>
-                  Rate Limit Protection:{" "}
-                  <strong className="text-white font-extrabold">
-                    10,000 req / minute
-                  </strong>
-                </span>
-              </li>
+            <ul className="space-y-1.5 text-stone-400">
+              <li>Unlimited storage buckets</li>
+              <li>Unlimited active API keys</li>
+              <li>High-throughput rate limits (1,000 req/min)</li>
+              <li>Priority support</li>
             </ul>
           </div>
         </div>

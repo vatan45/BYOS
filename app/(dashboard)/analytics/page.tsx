@@ -161,38 +161,33 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2.5">
-            <BarChart3 className="w-7 h-7 text-emerald-400" />
-            <span>Telemetry & Storage Analytics</span>
+          <h1 className="text-2xl font-semibold text-white tracking-tight flex items-center space-x-2.5">
+            <BarChart3 className="w-6 h-6 text-emerald-400" />
+            <span>Analytics</span>
           </h1>
           <p className="text-stone-400 text-sm mt-1">
-            Real-time hourly usage rollups, bandwidth transfer proxies, and API
-            operation distributions.
+            Usage, bandwidth, and API operations over time.
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
-          <span className="text-xs font-mono text-stone-400 flex items-center space-x-1">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400 mr-1 shrink-0" />
-            Time Horizon:
-          </span>
           <Tabs
             value={granularity}
             onValueChange={(val) => setGranularity(val)}
-            className="w-40"
+            className="w-36"
           >
             <TabsList className="bg-stone-900 border border-stone-800 grid w-full grid-cols-2">
               <TabsTrigger
                 value="day"
-                className="data-[state=active]:bg-emerald-500 data-[state=active]:text-stone-950 font-bold text-xs"
+                className="data-[state=active]:bg-emerald-400 data-[state=active]:text-stone-950 font-medium text-xs"
               >
                 Daily
               </TabsTrigger>
               <TabsTrigger
                 value="week"
-                className="data-[state=active]:bg-emerald-500 data-[state=active]:text-stone-950 font-bold text-xs"
+                className="data-[state=active]:bg-emerald-400 data-[state=active]:text-stone-950 font-medium text-xs"
               >
                 Weekly
               </TabsTrigger>
@@ -202,75 +197,73 @@ export default function AnalyticsPage() {
             variant="outline"
             size="icon"
             onClick={fetchAnalytics}
-            className="bg-stone-900 border-stone-800 hover:bg-stone-800 text-stone-300 rounded-xl shrink-0"
-            title="Refresh real-time rollup data"
+            className="bg-stone-900 border-stone-800 hover:bg-stone-800 text-stone-300 rounded-lg shrink-0 h-9 w-9"
+            title="Refresh"
           >
-            <RefreshCw className="w-4 h-4 text-emerald-400" />
+            <RefreshCw className="w-3.5 h-3.5 text-stone-400" />
           </Button>
         </div>
       </div>
 
       {/* SUMMARY STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-stone-900/70 border-stone-800 p-6 flex flex-col justify-between">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">
-              Proxied Storage
+            <span className="text-xs font-mono uppercase">
+              Storage used
             </span>
-            <HardDrive className="w-5 h-5 text-emerald-400" />
+            <HardDrive className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {formatBytes(summary.totalStorageBytes)}
           </div>
-          <div className="mt-2 text-[11px] text-emerald-400 font-mono flex items-center">
-            <Sparkles className="w-3 h-3 mr-1" />
-            <span>Across {summary.objectCount} total Drive objects</span>
+          <div className="mt-2 text-xs text-stone-400">
+            Across {summary.objectCount} objects
           </div>
         </Card>
 
-        <Card className="bg-stone-900/70 border-stone-800 p-6 flex flex-col justify-between">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">
-              Bandwidth Volume
+            <span className="text-xs font-mono uppercase">
+              Bandwidth
             </span>
-            <TrendingUp className="w-5 h-5 text-cyan-400" />
+            <TrendingUp className="w-4 h-4 text-stone-400" />
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {formatBytes(summary.totalBandwidthBytes)}
           </div>
-          <div className="mt-2 text-[11px] text-stone-400 font-mono">
-            <span>Zero transfer egress fees</span>
+          <div className="mt-2 text-xs text-stone-400">
+            Zero egress fees
           </div>
         </Card>
 
-        <Card className="bg-stone-900/70 border-stone-800 p-6 flex flex-col justify-between">
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
           <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase font-bold">
-              Total API Requests
+            <span className="text-xs font-mono uppercase">
+              API requests
             </span>
-            <Activity className="w-5 h-5 text-emerald-400" />
+            <Activity className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold text-white font-sans">
+          <div className="text-2xl font-semibold text-white font-mono">
             {summary.totalRequests.toLocaleString()}
           </div>
-          <div className="mt-2 text-[11px] text-emerald-400 font-mono flex items-center">
-            <ArrowUpRight className="w-3 h-3 mr-1" />
-            <span>100% successful translations</span>
+          <div className="mt-2 text-xs text-stone-400">
+            Total operations
           </div>
         </Card>
 
-        <Card className="bg-stone-900/90 border-2 border-emerald-500/40 p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-emerald-400 mb-2">
-            <span className="text-xs font-mono uppercase font-extrabold">
-              Cost Savings Proxy
+        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
+          <div className="flex items-center justify-between text-stone-400 mb-2">
+            <span className="text-xs font-mono uppercase">
+              Cost
             </span>
-            <Database className="w-5 h-5 text-emerald-400" />
+            <Database className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold text-white font-sans">
-            ~$0.00
+          <div className="text-2xl font-semibold text-white font-mono">
+            $0.00
           </div>
-          <div className="mt-2 text-[11px] text-stone-300 font-mono">
-            Direct Drive streams bypass cloud proxy markup
+          <div className="mt-2 text-xs text-stone-400">
+            Included with Google Drive
           </div>
         </Card>
       </div>

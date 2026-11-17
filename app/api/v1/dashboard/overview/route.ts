@@ -73,17 +73,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const allowedAdminEmails = process.env.ADMIN_EMAILS
-      ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase())
-      : ["developer@byos.dev", "iamvatan.dev@gmail.com"];
-    const isAdmin = allowedAdminEmails.includes(user.email.toLowerCase()) || user.id === "00000000-0000-0000-0000-000000000000";
-
     return NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
         plan: user.plan,
-        isAdmin,
       },
       connection: {
         connected: Boolean(connection),

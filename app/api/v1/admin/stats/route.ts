@@ -9,21 +9,20 @@ export const dynamic = "force-dynamic";
 
 /**
  * GET /api/v1/admin/stats
- * Protected internal operator view showing platform-wide aggregate usage metrics across all accounts.
+ * Platform aggregate usage metrics.
  */
 export async function GET(request: NextRequest) {
   const user = await getDashboardSessionUser(request);
   if (!user) {
-    return errorResponse("InvalidApiKey", "Unauthorized operator session");
+    return errorResponse("InvalidApiKey", "Unauthorized");
   }
 
-  // Admin access verification via ADMIN_EMAILS env var (fallback to local dev/founder emails for testing)
   const allowedAdminEmails = process.env.ADMIN_EMAILS
     ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase())
-    : ["developer@byos.dev", "iamvatan.dev@gmail.com"];
+    : [];
 
-  if (!allowedAdminEmails.includes(user.email.toLowerCase()) && user.id !== "00000000-0000-0000-0000-000000000000") {
-    return errorResponse("AccessDenied", "403 Forbidden: Operator administrator access only.");
+  if (!allowedAdminEmails.includes(user.email.toLowerCase())) {
+    return errorResponse("AccessDenied", "Access denied.");
   }
 
   try {
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
     const todayRollups = allRollups.filter((r) => r.date === todayStr);
     const totalRequestsToday = todayRollups.reduce((acc, r) => acc + r.requestCount, 0);
 
-    // Per-user breakdown for operator table
+    // Per-user breakdown
     const userStats = allUsers.map((u) => {
       const uBuckets = allBuckets.filter((b) => b.userId === u.id);
       const uBucketIds = uBuckets.map((b) => b.id);
@@ -77,6 +76,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (err) {
     console.error("[AdminStats] Error:", err);
-    return errorResponse("InternalError", "Failed to calculate global operator telemetry");
+    return errorResponse("InternalError", "Failed to retrieve platform stats");
   }
 }

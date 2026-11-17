@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { AlertOctagon, RefreshCw, ShieldAlert } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { RefreshCw, AlertCircle } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { captureException } from "@/lib/monitoring";
 
@@ -20,39 +20,36 @@ export default function DashboardErrorBoundary({ error, reset }: ErrorBoundaryPr
   }, [error]);
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] p-6">
-      <Card className="max-w-md w-full bg-stone-900/90 border-2 border-rose-500/40 p-6 shadow-[0_0_50px_rgba(244,63,94,0.15)] text-center space-y-4">
+    <div className="flex items-center justify-center min-h-[60vh] p-6">
+      <Card className="max-w-md w-full bg-stone-900/60 border border-stone-800 p-6 rounded-xl text-center space-y-4">
         <CardHeader className="p-0 flex flex-col items-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-2">
-            <AlertOctagon className="w-8 h-8 animate-pulse" />
+          <div className="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-stone-400 mb-1">
+            <AlertCircle className="w-5 h-5 text-amber-400" />
           </div>
-          <CardTitle className="text-xl font-extrabold text-white tracking-tight">
-            Unexpected Dashboard Fault
+          <CardTitle className="text-lg font-semibold text-white">
+            Something went wrong
           </CardTitle>
-          <CardDescription className="text-stone-400 text-xs font-mono">
-            Error ID: {error.digest || "RUNTIME_CLIENT_EXCEPTION"}
-          </CardDescription>
         </CardHeader>
 
         <CardContent className="p-0 space-y-4">
-          <p className="text-sm text-stone-300 font-sans leading-relaxed">
-            An unexpected error occurred while rendering this view. Our monitoring system has recorded the fault telemetry for investigation. Your underlying Google Drive files remain completely safe and unharmed.
+          <p className="text-xs text-stone-400 leading-relaxed">
+            An unexpected error occurred while loading this view. Your files and data are unaffected.
           </p>
 
-          <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
             <Button
               onClick={() => reset()}
-              className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold text-xs px-5 py-5 rounded-xl transition-all"
+              className="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium text-xs px-4 py-2 rounded-lg"
             >
-              <RefreshCw className="w-4 h-4 mr-2 shrink-0 animate-spin-once" />
-              Retry & Reload View
+              <RefreshCw className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+              Try again
             </Button>
             <Button
               variant="outline"
               onClick={() => window.location.assign("/dashboard")}
-              className="bg-stone-950 hover:bg-stone-800 text-stone-300 border-stone-800 text-xs font-bold px-5 py-5 rounded-xl"
+              className="border-stone-800 hover:bg-stone-800 text-stone-300 text-xs rounded-lg px-4 py-2"
             >
-              Back to Overview
+              Overview
             </Button>
           </div>
         </CardContent>
