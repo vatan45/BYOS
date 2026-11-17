@@ -2,9 +2,6 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
-  SUPABASE_URL: z.string().url(),
-  SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   GOOGLE_REDIRECT_URI: z.string().url(),
@@ -14,4 +11,12 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url(),
 });
 
-export const env = envSchema.parse(process.env);
+// Validate each integration when used, so an unconfigured Drive connection
+// does not prevent accounts and the empty workspace from loading.
+export const env = new Proxy({} as z.infer<typeof envSchema>, {
+  get(_target, property: string) {
+    const schema = envSchema.shape[property as keyof typeof envSchema.shape];
+    if (!schema) return undefined;
+    return schema.parse(process.env[property]);
+  },
+});

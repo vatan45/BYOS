@@ -1,6 +1,6 @@
 import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "../env";
+
 import * as schema from "./schema";
 
 // Ensure a singleton database connection pool across Next.js dev HMR and Serverless invocations.
@@ -16,7 +16,7 @@ const globalForDb = globalThis as unknown as {
 
 const queryClient =
   globalForDb.queryClient ??
-  postgres(env.DATABASE_URL, {
+  postgres(process.env.DATABASE_URL || "postgres://localhost/byos", {
     max: 1, // Keep max 1 concurrent connection per worker/dev instance
     idle_timeout: 20, // Close idle connections after 20 seconds to release pool slots
     connect_timeout: 10,

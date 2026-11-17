@@ -2,7 +2,8 @@ import { db } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
-import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { readSession, SESSION_COOKIE } from "./password-session";
 
 export interface SessionUser {
   id: string;
@@ -14,62 +15,30 @@ const DEFAULT_MVP_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 /**
  * Resolves the authenticated session user for dashboard endpoints.
- * In production this authenticates via Supabase session JWTs/cookies so every user gets their own isolated workspace and storage connection.
- * Only falls back to header/default ID in non-production local development or integration test runs.
+ * Authenticates opaque, revocable database sessions for isolated workspaces.
+ * Only falls back to header/default ID in automated test runs.
  */
 export async function getDashboardSessionUser(
   request: NextRequest | Request
 ): Promise<SessionUser | null> {
-  // 1. Attempt to resolve authentic user session via Supabase SSR Cookies
   try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser();
-
-    if (authUser && authUser.id) {
-      let user = await db.query.users.findFirst({
-        where: eq(users.id, authUser.id),
-      });
-
-      if (!user) {
-        try {
-          const [seeded] = await db
-            .insert(users)
-            .values({
-              id: authUser.id,
-              email: authUser.email || `user_${authUser.id.slice(0, 8)}@byos.dev`,
-              plan: "pro", // Give authentic registered developers Pro features by default
-            })
-            .returning();
-          if (seeded) {
-            return { id: seeded.id, email: seeded.email, plan: seeded.plan };
-          }
-        } catch (err) {
-          user = await db.query.users.findFirst({
-            where: eq(users.id, authUser.id),
-          });
-        }
-      }
-
-      if (user) {
-        return { id: user.id, email: user.email, plan: user.plan };
-      }
-    }
+    const user = await readSession(cookies().get(SESSION_COOKIE)?.value);
+    if (user) return user;
   } catch {
-    // Ignore Supabase resolution errors when called outside HTTP request context (e.g. CLI scripts/tests)
+    /* Fail closed outside automated fixtures. */
   }
 
   // 2. Production Hardening: Never allow unauthenticated fallback to developer/test accounts in production
-  if (process.env.NODE_ENV === "production" && !request.headers.get("x-byos-test-bypass")) {
+  if (process.env.NODE_ENV !== "test") {
     return null;
   }
 
-  // 3. Fallback for Local Dev Server & Vitest CI suites only
+  // 3. Fixture identities are available only during automated tests.
   const url = new URL(request.url, "http://localhost");
   const userIdFromHeader = request.headers.get("x-user-id");
   const userIdFromQuery = url.searchParams.get("userId");
-  const targetUserId = userIdFromHeader || userIdFromQuery || DEFAULT_MVP_USER_ID;
+  const targetUserId =
+    userIdFromHeader || userIdFromQuery || DEFAULT_MVP_USER_ID;
 
   let user = await db.query.users.findFirst({
     where: eq(users.id, targetUserId),
@@ -85,7 +54,8 @@ export async function getDashboardSessionUser(
           plan: "pro",
         })
         .returning();
-      if (seeded) return { id: seeded.id, email: seeded.email, plan: seeded.plan };
+      if (seeded)
+        return { id: seeded.id, email: seeded.email, plan: seeded.plan };
     } catch {
       user = await db.query.users.findFirst({
         where: eq(users.id, DEFAULT_MVP_USER_ID),

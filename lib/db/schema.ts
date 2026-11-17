@@ -13,7 +13,7 @@ import { relations } from "drizzle-orm";
 
 // 1. users
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(), // In real app, this mirrors auth.users.id via trigger
+  id: uuid("id").primaryKey().defaultRandom(), // Application-owned account ID
   email: text("email").notNull().unique(),
   plan: text("plan").notNull().default("free"), // 'free' or 'pro'
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -253,3 +253,17 @@ export const folderPathCacheRelations = relations(folderPathCache, ({ one }) => 
     references: [buckets.id],
   }),
 }));
+
+export const passwordCredentials = pgTable("password_credentials", {
+ userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+ passwordHash: text("password_hash").notNull(),
+});
+export const authSessions = pgTable("auth_sessions", {
+ tokenHash: text("token_hash").primaryKey(),
+ userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+ expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+}, t => ({ userIdx: index("auth_sessions_user_idx").on(t.userId) }));
+export const authAttempts = pgTable("auth_attempts", {
+ key: text("key").primaryKey(), count: integer("count").notNull(),
+ expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});

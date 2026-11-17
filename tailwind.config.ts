@@ -10,6 +10,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        stone: {
+          950: "#0c0e0d",
+          900: "#141813",
+          800: "#292f26",
+          700: "#40483a",
+          600: "#69725f",
+          500: "#8b9482",
+          400: "#a9b19f",
+          300: "#c7cebf",
+          200: "#e1e6d9",
+          100: "#f0f3e9",
+        },
+        emerald: {
+          300: "#e5ffbb",
+          400: "#d8f99c",
+          500: "#c3e786",
+          600: "#8eaf58",
+        },
         background: "var(--background)",
         foreground: "var(--foreground)",
       },

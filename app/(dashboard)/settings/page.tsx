@@ -49,7 +49,11 @@ export default function SettingsPage() {
   };
 
   const handleDisconnect = async () => {
-    if (!confirm("Are you certain you wish to pause storage access and disconnect Google Drive? Your existing files will remain fully intact inside your personal Google Drive.")) {
+    if (
+      !confirm(
+        "Are you certain you wish to pause storage access and disconnect Google Drive? Your existing files will remain fully intact inside your personal Google Drive."
+      )
+    ) {
       return;
     }
     setDisconnecting(true);
@@ -57,10 +61,14 @@ export default function SettingsPage() {
       const res = await fetch("/api/auth/google/disconnect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: overview?.user.id || "00000000-0000-0000-0000-000000000000" }),
+        body: JSON.stringify({
+          userId: overview?.user.id || "00000000-0000-0000-0000-000000000000",
+        }),
       });
       if (res.ok) {
-        toast.success("Google Drive disconnected cleanly! Developer API operations have been paused.");
+        toast.success(
+          "Google Drive disconnected cleanly! Developer API operations have been paused."
+        );
         fetchOverview();
         router.refresh();
       } else {
@@ -72,6 +80,29 @@ export default function SettingsPage() {
       setDisconnecting(false);
     }
   };
+
+  if (!loading && !overview) {
+    return (
+      <div
+        role="alert"
+        className="rounded-xl border border-stone-800 bg-stone-900 p-8 space-y-4"
+      >
+        <h1 className="text-xl">Unable to load this workspace</h1>
+        <p className="text-stone-400">
+          Check your connection and sign-in session, then try again.
+        </p>
+        <button
+          onClick={() => fetchOverview()}
+          className="rounded-md bg-emerald-400 text-stone-950 px-4 py-2"
+        >
+          Try again
+        </button>
+        <a href="/login" className="ml-4 underline">
+          Sign in
+        </a>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -97,7 +128,8 @@ export default function SettingsPage() {
           <span>Storage Connection & Account Settings</span>
         </h1>
         <p className="text-stone-400 text-sm mt-1">
-          Manage your Google OAuth token bindings, privacy guarantees, and SaaS subscription tiers.
+          Manage your Google OAuth token bindings, privacy guarantees, and SaaS
+          subscription tiers.
         </p>
       </div>
 
@@ -110,15 +142,24 @@ export default function SettingsPage() {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="font-semibold text-white text-base">Google Drive Storage</h2>
-                <Badge variant="outline" className={`text-[11px] font-mono font-medium ${
-                  isConnected ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-stone-800 text-stone-400 border-stone-700"
-                }`}>
+                <h2 className="font-semibold text-white text-base">
+                  Google Drive Storage
+                </h2>
+                <Badge
+                  variant="outline"
+                  className={`text-[11px] font-mono font-medium ${
+                    isConnected
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                      : "bg-stone-800 text-stone-400 border-stone-700"
+                  }`}
+                >
                   {isConnected ? "Connected" : "Disconnected"}
                 </Badge>
               </div>
               <p className="text-xs text-stone-400 mt-1">
-                {isConnected ? `Connected account: ${overview?.connection.email}` : "Not currently connected to Google Drive"}
+                {isConnected
+                  ? `Connected account: ${overview?.connection.email}`
+                  : "Not currently connected to Google Drive"}
               </p>
             </div>
           </div>
@@ -153,7 +194,15 @@ export default function SettingsPage() {
             <span>⚠️ Safe Disconnection & Zero-Deletion Guarantee</span>
           </div>
           <p className="leading-relaxed text-stone-300">
-            Unlinking your account revokes BYOS developer OAuth tokens immediately, pausing programmatic S3 Read/Write operations. <strong className="text-white underline decoration-amber-500">Nothing gets deleted from your cloud account!</strong> Every file and folder provisioned by BYOS remains completely intact and accessible inside your personal Google Drive via standard web or desktop apps. You can safely reconnect or pause access whenever you wish.
+            Unlinking your account revokes BYOS developer OAuth tokens
+            immediately, pausing programmatic S3 Read/Write operations.{" "}
+            <strong className="text-white underline decoration-amber-500">
+              Nothing gets deleted from your cloud account!
+            </strong>{" "}
+            Every file and folder provisioned by BYOS remains completely intact
+            and accessible inside your personal Google Drive via standard web or
+            desktop apps. You can safely reconnect or pause access whenever you
+            wish.
           </p>
         </div>
 
@@ -165,7 +214,12 @@ export default function SettingsPage() {
               <span>Restricted Scope Encryption</span>
             </div>
             <p className="text-stone-400 text-[11px] font-sans">
-              Tokens are encrypted at rest using AES-256-GCM. We never request full Google Drive authorization—our access is strictly scoped to <code className="text-cyan-300">https://www.googleapis.com/auth/drive.file</code>.
+              Tokens are encrypted at rest using AES-256-GCM. We never request
+              full Google Drive authorization—our access is strictly scoped to{" "}
+              <code className="text-cyan-300">
+                https://www.googleapis.com/auth/drive.file
+              </code>
+              .
             </p>
           </div>
           <div className="p-4 rounded-2xl bg-stone-950/80 border border-stone-800 space-y-2">
@@ -174,7 +228,9 @@ export default function SettingsPage() {
               <span>Real-Time Egress & Latency</span>
             </div>
             <p className="text-stone-400 text-[11px] font-sans">
-              Direct streaming architectures bypass proxy servers during uploads and downloads via signed transfer tokens, eliminating AWS bandwidth costs and optimizing throughput.
+              Direct streaming architectures bypass proxy servers during uploads
+              and downloads via signed transfer tokens, eliminating AWS
+              bandwidth costs and optimizing throughput.
             </p>
           </div>
         </div>
@@ -186,11 +242,18 @@ export default function SettingsPage() {
           <div className="flex items-center space-x-3">
             <DollarSign className="w-6 h-6 text-cyan-400 shrink-0" />
             <div>
-              <h2 className="font-extrabold text-white text-lg">Platform Plan & Quotas</h2>
-              <p className="text-xs text-stone-400">SaaS usage monetization, API rate limiting, and volume limits</p>
+              <h2 className="font-extrabold text-white text-lg">
+                Platform Plan & Quotas
+              </h2>
+              <p className="text-xs text-stone-400">
+                SaaS usage monetization, API rate limiting, and volume limits
+              </p>
             </div>
           </div>
-          <Badge variant="outline" className="px-3.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border-cyan-500/30 text-xs font-mono font-extrabold uppercase">
+          <Badge
+            variant="outline"
+            className="px-3.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border-cyan-500/30 text-xs font-mono font-extrabold uppercase"
+          >
             Current Tier: {overview?.user.plan.toUpperCase()} PLAN
           </Badge>
         </div>
@@ -203,9 +266,24 @@ export default function SettingsPage() {
               <span className="text-stone-500">$0 / mo</span>
             </div>
             <ul className="space-y-2.5 text-stone-400">
-              <li className="flex items-center space-x-2"><span>▪️ Max Storage Buckets: <strong className="text-stone-200">1 Bucket</strong></span></li>
-              <li className="flex items-center space-x-2"><span>▪️ Active API Keys Quota: <strong className="text-stone-200">20 Keys</strong></span></li>
-              <li className="flex items-center space-x-2"><span>▪️ Rate Limit Protection: <strong className="text-stone-200">100 req / minute</strong></span></li>
+              <li className="flex items-center space-x-2">
+                <span>
+                  ▪️ Max Storage Buckets:{" "}
+                  <strong className="text-stone-200">1 Bucket</strong>
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span>
+                  ▪️ Active API Keys Quota:{" "}
+                  <strong className="text-stone-200">20 Keys</strong>
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span>
+                  ▪️ Rate Limit Protection:{" "}
+                  <strong className="text-stone-200">100 req / minute</strong>
+                </span>
+              </li>
             </ul>
           </div>
 
@@ -216,12 +294,38 @@ export default function SettingsPage() {
             </div>
             <div className="font-extrabold text-emerald-300 text-base flex items-center space-x-1.5">
               <span>PRO Enterprise Unlimited</span>
-              <span className="text-xs text-stone-400 font-normal">($19 / mo)</span>
+              <span className="text-xs text-stone-400 font-normal">
+                ($19 / mo)
+              </span>
             </div>
             <ul className="space-y-2.5 text-stone-200 font-medium">
-              <li className="flex items-center space-x-2"><CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /><span>Max Storage Buckets: <strong className="text-white font-extrabold">UNLIMITED</strong></span></li>
-              <li className="flex items-center space-x-2"><CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /><span>Active API Keys Quota: <strong className="text-white font-extrabold">UNLIMITED</strong></span></li>
-              <li className="flex items-center space-x-2"><CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /><span>Rate Limit Protection: <strong className="text-white font-extrabold">10,000 req / minute</strong></span></li>
+              <li className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>
+                  Max Storage Buckets:{" "}
+                  <strong className="text-white font-extrabold">
+                    UNLIMITED
+                  </strong>
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>
+                  Active API Keys Quota:{" "}
+                  <strong className="text-white font-extrabold">
+                    UNLIMITED
+                  </strong>
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>
+                  Rate Limit Protection:{" "}
+                  <strong className="text-white font-extrabold">
+                    10,000 req / minute
+                  </strong>
+                </span>
+              </li>
             </ul>
           </div>
         </div>
