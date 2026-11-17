@@ -104,7 +104,7 @@ console.log("Grant revoked successfully. Access attempt will immediately return 
             <span>Developer Reference v1.0</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
-            <BookOpen className="w-8 h-8 text-cyan-400 shrink-0" />
+            <BookOpen className="w-8 h-8 text-emerald-400 shrink-0" />
             S3-Compatible API & SDK Documentation
           </h1>
           <p className="text-sm text-stone-400 max-w-2xl font-medium leading-relaxed">
@@ -134,7 +134,7 @@ console.log("Grant revoked successfully. Access attempt will immediately return 
         <TabsList className="bg-stone-900/90 p-1 rounded-2xl border border-stone-800 flex flex-wrap gap-1 w-fit">
           <TabsTrigger
             value="sdk"
-            className="px-6 py-2.5 rounded-xl text-xs font-bold transition-all data-[state=active]:bg-stone-800 data-[state=active]:text-cyan-400 data-[state=active]:shadow-sm flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl text-xs font-bold transition-all data-[state=active]:bg-stone-800 data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm flex items-center gap-2"
           >
             <Code className="w-4 h-4" />
             TypeScript / Node.js SDK
@@ -163,7 +163,7 @@ console.log("Grant revoked successfully. Access attempt will immediately return 
               <CardHeader className="border-b border-stone-800/60 pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
                       <Code className="w-5 h-5" />
                     </div>
                     <div>
@@ -171,7 +171,7 @@ console.log("Grant revoked successfully. Access attempt will immediately return 
                       <CardDescription className="text-xs text-stone-400">Connect to BYOS using your secret API key</CardDescription>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-mono border-cyan-500/30 text-cyan-400 bg-cyan-500/5 px-2.5 py-1 rounded-lg">
+                  <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/30 text-emerald-400 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
                     npm install byos-sdk
                   </Badge>
                 </div>
@@ -251,7 +251,7 @@ console.log("Grant revoked successfully. Access attempt will immediately return 
             <Card className="bg-stone-900/60 border-stone-800/80 rounded-2xl shadow-lg backdrop-blur-sm overflow-hidden">
               <CardHeader className="border-b border-stone-800/60 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
                     <Download className="w-5 h-5" />
                   </div>
                   <div>

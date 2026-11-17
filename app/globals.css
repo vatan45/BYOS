@@ -118,12 +118,12 @@ input {
     box-shadow 0.18s;
 }
 :focus-visible {
-  outline: 2px solid #d8f99c;
+  outline: 2px solid #34d399;
   outline-offset: 5px;
 }
 .landing {
-  background: #0c0e0d;
-  color: #f0f2eb;
+  background: #0c0a09;
+  color: #f5f5f4;
   font-family: var(--font-geist-sans);
 }
 .wrap {
@@ -173,7 +173,7 @@ input {
   justify-content: center;
   gap: 24px;
   background: var(--accent);
-  color: #17200e;
+  color: #0c0a09;
   border: 1px solid var(--accent);
   border-radius: 7px;
   padding: 15px 23px;
@@ -181,8 +181,8 @@ input {
   font-weight: 600;
 }
 .action:hover {
-  background: #e8ffbf;
-  box-shadow: 0 4px 20px #d8f99c12;
+  background: #6ee7b7;
+  box-shadow: 0 4px 20px #34d39912;
 }
 .action.small {
   padding: 10px 16px;
@@ -309,7 +309,7 @@ input {
 }
 .preview-sidebar .selected,
 .preview-sidebar a.selected {
-  background: #d8f99c0d;
+  background: #34d39915;
   color: var(--accent);
 }
 .preview-workspace {
@@ -384,7 +384,7 @@ input {
 }
 .usage-track {
   height: 3px;
-  background: #30372b;
+  background: #292524;
   margin-bottom: 8px;
 }
 .usage-track i {
@@ -661,10 +661,10 @@ h2 {
   align-items: center;
 }
 .console-shell {
-  background: #0c0e0d;
+  background: #0c0a09;
 }
 .console-shell > aside {
-  background: #10130f;
+  background: #1c1917;
 }
 .console-shell main {
   max-width: 1500px;
@@ -686,9 +686,9 @@ h2 {
   background-image: none;
 }
 .console-shell nav a[aria-current="page"] {
-  background: #d8f99c0c;
-  border-color: #d8f99c30;
-  color: #d8f99c;
+  background: #34d39912;
+  border-color: #34d39940;
+  color: #34d399;
 }
 .console-shell table th {
   font-size: 10px;
@@ -702,18 +702,18 @@ h2 {
   animation: surface-enter 0.35s ease-out;
 }
 .glass-card {
-  background: #141813;
-  border-color: #30372b;
+  background: #1c1917;
+  border-color: #292524;
   box-shadow: 0 10px 40px #0002;
 }
 .glass-card-hover:hover {
-  border-color: #71835c;
+  border-color: #34d399;
   box-shadow: none;
 }
 .btn-gradient-cyan,
 .btn-gradient-purple {
-  background: #d8f99c;
-  color: #17200e;
+  background: #34d399;
+  color: #0c0a09;
   box-shadow: none;
 }
 @keyframes surface-enter {
@@ -866,7 +866,7 @@ h2 {
   }
 }
 .auth-shell {
-  background: #0c0e0d;
+  background: #0c0a09;
 }
 .auth-shell > div.absolute {
   display: none;
@@ -936,9 +936,9 @@ h2 {
   color: #3659e3;
 }
 .product-preview {
-  --accent: #d8f99c;
-  --line: #292d29;
-  color: #f0f2eb;
+  --accent: #34d399;
+  --line: #292524;
+  color: #f5f5f4;
   box-shadow: 0 28px 70px #25395925;
 }
 .integration-strip {
@@ -954,8 +954,8 @@ h2 {
   color: #3659e3;
 }
 .code-panel {
-  --line: #292d29;
-  color: #f0f2eb;
+  --line: #292524;
+  color: #f5f5f4;
 }
 .landing-footer {
   color: #526078;

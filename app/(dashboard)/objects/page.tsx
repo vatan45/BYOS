@@ -60,11 +60,11 @@ function formatBytes(bytes: number, decimals = 2) {
 
 function getFileTypeIcon(key: string) {
   const ext = key.split(".").pop()?.toLowerCase();
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext || "")) return <FileImage className="w-4 h-4 text-[#d8f99c]" />;
-  if (["mp4", "mov", "webm", "avi"].includes(ext || "")) return <FileVideo className="w-4 h-4 text-[#d8f99c]" />;
-  if (["pdf", "doc", "docx", "txt", "md"].includes(ext || "")) return <FileText className="w-4 h-4 text-[#d8f99c]" />;
-  if (["zip", "tar", "gz", "rar"].includes(ext || "")) return <FileArchive className="w-4 h-4 text-[#d8f99c]" />;
-  if (["js", "ts", "json", "html", "css", "py", "go", "rs"].includes(ext || "")) return <FileCode className="w-4 h-4 text-[#d8f99c]" />;
+  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext || "")) return <FileImage className="w-4 h-4 text-emerald-400" />;
+  if (["mp4", "mov", "webm", "avi"].includes(ext || "")) return <FileVideo className="w-4 h-4 text-emerald-400" />;
+  if (["pdf", "doc", "docx", "txt", "md"].includes(ext || "")) return <FileText className="w-4 h-4 text-emerald-400" />;
+  if (["zip", "tar", "gz", "rar"].includes(ext || "")) return <FileArchive className="w-4 h-4 text-emerald-400" />;
+  if (["js", "ts", "json", "html", "css", "py", "go", "rs"].includes(ext || "")) return <FileCode className="w-4 h-4 text-emerald-400" />;
   return <File className="w-4 h-4 text-[#929a8d]" />;
 }
 
