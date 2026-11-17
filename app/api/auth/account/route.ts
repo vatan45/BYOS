@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
       { user },
       { status: user ? 200 : 401, headers: { "Cache-Control": "no-store" } }
     );
-  } catch {
+  } catch (error) {
+    console.error("Account GET error:", error);
     return NextResponse.json(
       { error: "Account database is unavailable." },
       { status: 503 }
@@ -79,7 +80,8 @@ export async function POST(request: NextRequest) {
       maxAge: SESSION_SECONDS,
     });
     return response;
-  } catch {
+  } catch (error) {
+    console.error("Account POST error:", error);
     return NextResponse.json(
       {
         error:
