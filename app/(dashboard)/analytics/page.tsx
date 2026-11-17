@@ -159,113 +159,66 @@ export default function AnalyticsPage() {
   const { summary, series, topObjects } = data;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
+    <div className="space-y-8">
+      {/* HEADING */}
+      <div className="preview-heading">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight flex items-center space-x-2.5">
-            <BarChart3 className="w-6 h-6 text-emerald-400" />
-            <span>Analytics</span>
-          </h1>
-          <p className="text-stone-400 text-sm mt-1">
-            Usage, bandwidth, and API operations over time.
-          </p>
+          <span className="muted">METRICS & THROUGHPUT</span>
+          <h3>Analytics</h3>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Tabs
             value={granularity}
             onValueChange={(val) => setGranularity(val)}
             className="w-36"
           >
-            <TabsList className="bg-stone-900 border border-stone-800 grid w-full grid-cols-2">
+            <TabsList className="bg-[#111411] border border-[#292d29] grid w-full grid-cols-2">
               <TabsTrigger
                 value="day"
-                className="data-[state=active]:bg-emerald-400 data-[state=active]:text-stone-950 font-medium text-xs"
+                className="data-[state=active]:bg-[#d8f99c] data-[state=active]:text-[#111411] text-xs"
               >
                 Daily
               </TabsTrigger>
               <TabsTrigger
                 value="week"
-                className="data-[state=active]:bg-emerald-400 data-[state=active]:text-stone-950 font-medium text-xs"
+                className="data-[state=active]:bg-[#d8f99c] data-[state=active]:text-[#111411] text-xs"
               >
                 Weekly
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button
-            variant="outline"
-            size="icon"
+          <button
             onClick={fetchAnalytics}
-            className="bg-stone-900 border-stone-800 hover:bg-stone-800 text-stone-300 rounded-lg shrink-0 h-9 w-9"
+            className="p-2 border border-[#292d29] rounded bg-[#111411] hover:bg-[#1a2018] text-[#929a8d] hover:text-[#f0f2eb] transition-colors"
             title="Refresh"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-stone-400" />
-          </Button>
+            <RefreshCw size={13} />
+          </button>
         </div>
       </div>
 
-      {/* SUMMARY STATS CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase">
-              Storage used
-            </span>
-            <HardDrive className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-semibold text-white font-mono">
+      {/* STATS STRIP */}
+      <div className="preview-stats">
+        <div>
+          <span>Storage used</span>
+          <strong>
             {formatBytes(summary.totalStorageBytes)}
-          </div>
-          <div className="mt-2 text-xs text-stone-400">
-            Across {summary.objectCount} objects
-          </div>
-        </Card>
-
-        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase">
-              Bandwidth
-            </span>
-            <TrendingUp className="w-4 h-4 text-stone-400" />
-          </div>
-          <div className="text-2xl font-semibold text-white font-mono">
+          </strong>
+          <small>Across {summary.objectCount} objects</small>
+        </div>
+        <div>
+          <span>Bandwidth</span>
+          <strong>
             {formatBytes(summary.totalBandwidthBytes)}
-          </div>
-          <div className="mt-2 text-xs text-stone-400">
-            Zero egress fees
-          </div>
-        </Card>
-
-        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase">
-              API requests
-            </span>
-            <Activity className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-semibold text-white font-mono">
-            {summary.totalRequests.toLocaleString()}
-          </div>
-          <div className="mt-2 text-xs text-stone-400">
-            Total operations
-          </div>
-        </Card>
-
-        <Card className="bg-stone-900/50 border-stone-800/80 p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between text-stone-400 mb-2">
-            <span className="text-xs font-mono uppercase">
-              Cost
-            </span>
-            <Database className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-semibold text-white font-mono">
-            $0.00
-          </div>
-          <div className="mt-2 text-xs text-stone-400">
-            Included with Google Drive
-          </div>
-        </Card>
+          </strong>
+          <small>Zero egress fees</small>
+        </div>
+        <div>
+          <span>API requests</span>
+          <strong>{summary.totalRequests.toLocaleString()}</strong>
+          <small>Total operations</small>
+        </div>
       </div>
 
       {/* CHARTS SECTION (Recharts in shadcn Cards) */}

@@ -291,15 +291,24 @@ input {
   font-size: 11px;
   color: #929a8d;
 }
-.preview-sidebar > div {
+.preview-sidebar > div,
+.preview-sidebar a {
   display: flex;
   align-items: center;
   gap: 11px;
   padding: 11px;
   border-radius: 5px;
   margin: 3px 0;
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s, background-color 0.15s;
 }
-.preview-sidebar .selected {
+.preview-sidebar a:hover {
+  color: #eef1e8;
+  background: rgba(255, 255, 255, 0.04);
+}
+.preview-sidebar .selected,
+.preview-sidebar a.selected {
   background: #d8f99c0d;
   color: var(--accent);
 }
@@ -406,6 +415,42 @@ input {
 }
 .connected {
   color: #b6cd9d;
+}
+.app-shell {
+  --accent: #d8f99c;
+  --line: #292d29;
+  --surface: #101211;
+  background: #0c0e0d;
+  color: #f0f2eb;
+  font-family: var(--font-geist-sans);
+  min-height: 100vh;
+}
+.app-shell .preview-sidebar {
+  width: 220px;
+  min-height: calc(100vh - 56px);
+  border-right: 1px solid var(--line);
+}
+.app-shell .preview-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #0e110e;
+  border-bottom: 1px solid var(--line);
+}
+.app-shell .preview-content {
+  padding: 32px 36px;
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+.preview-create {
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+.preview-create:hover {
+  background: #d8f99c15;
+  border-color: var(--accent);
 }
 .integration-strip {
   display: flex;

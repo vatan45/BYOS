@@ -6,6 +6,11 @@ import {
   FolderTree,
   Folder,
   FileText,
+  FileCode,
+  FileImage,
+  FileVideo,
+  FileArchive,
+  File,
   Upload,
   Download,
   Trash2,
@@ -55,12 +60,12 @@ function formatBytes(bytes: number, decimals = 2) {
 
 function getFileTypeIcon(key: string) {
   const ext = key.split(".").pop()?.toLowerCase();
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext || "")) return "🖼️";
-  if (["mp4", "mov", "webm", "avi"].includes(ext || "")) return "🎬";
-  if (["pdf", "doc", "docx", "txt", "md"].includes(ext || "")) return "📄";
-  if (["zip", "tar", "gz", "rar"].includes(ext || "")) return "📦";
-  if (["js", "ts", "json", "html", "css", "py", "go", "rs"].includes(ext || "")) return "💻";
-  return "📑";
+  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext || "")) return <FileImage className="w-4 h-4 text-[#d8f99c]" />;
+  if (["mp4", "mov", "webm", "avi"].includes(ext || "")) return <FileVideo className="w-4 h-4 text-[#d8f99c]" />;
+  if (["pdf", "doc", "docx", "txt", "md"].includes(ext || "")) return <FileText className="w-4 h-4 text-[#d8f99c]" />;
+  if (["zip", "tar", "gz", "rar"].includes(ext || "")) return <FileArchive className="w-4 h-4 text-[#d8f99c]" />;
+  if (["js", "ts", "json", "html", "css", "py", "go", "rs"].includes(ext || "")) return <FileCode className="w-4 h-4 text-[#d8f99c]" />;
+  return <File className="w-4 h-4 text-[#929a8d]" />;
 }
 
 function ObjectBrowserContent() {
@@ -318,21 +323,19 @@ function ObjectBrowserContent() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* HEADER WITH BUCKET AND KEY SELECTOR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2.5">
-            <FolderTree className="w-7 h-7 text-emerald-400" />
-            <span>Interactive Object Explorer</span>
-          </h1>
-          <p className="text-stone-400 text-sm mt-1">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+        <div className="preview-heading">
+          <h6>STORAGE BROWSER</h6>
+          <h1>Interactive Object Explorer</h1>
+          <p className="muted">
             Browse directory structures, drag-and-drop file transfers, inspect version snapshots, and generate presigned links.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Bucket dropdown */}
-          <div className="flex items-center space-x-2 bg-stone-900 px-3 py-2 rounded-xl border border-stone-800">
-            <HardDrive className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="flex items-center space-x-2 bg-[#111411] px-3.5 py-2 rounded-xl border border-[#292d29]">
+            <HardDrive className="w-4 h-4 text-[#d8f99c] shrink-0" />
             <select
               value={selectedBucket}
               onChange={(e) => {
@@ -340,11 +343,11 @@ function ObjectBrowserContent() {
                 setCurrentPrefix("");
                 setSelectedObject(null);
               }}
-              className="bg-transparent text-white font-mono text-xs font-bold focus:outline-none pr-4 cursor-pointer"
+              className="bg-transparent text-[#f0f2eb] font-mono text-xs font-medium focus:outline-none pr-4 cursor-pointer"
             >
               {buckets.length === 0 && <option value="">No Buckets</option>}
               {buckets.map((b) => (
-                <option key={b.id} value={b.name} className="bg-stone-900 text-white">
+                <option key={b.id} value={b.name} className="bg-[#111411] text-[#f0f2eb]">
                   Bucket: {b.name}
                 </option>
               ))}
@@ -352,16 +355,16 @@ function ObjectBrowserContent() {
           </div>
 
           {/* API Key dropdown */}
-          <div className="flex items-center space-x-2 bg-stone-900 px-3 py-2 rounded-xl border border-stone-800">
-            <Key className="w-4 h-4 text-cyan-400 shrink-0" />
+          <div className="flex items-center space-x-2 bg-[#111411] px-3.5 py-2 rounded-xl border border-[#292d29]">
+            <Key className="w-4 h-4 text-[#d8f99c] shrink-0" />
             <select
               value={activeApiKey}
               onChange={(e) => setActiveApiKey(e.target.value)}
-              className="bg-transparent text-white font-mono text-xs font-bold focus:outline-none pr-4 cursor-pointer"
+              className="bg-transparent text-[#f0f2eb] font-mono text-xs font-medium focus:outline-none pr-4 cursor-pointer"
             >
-              <option value="" className="bg-stone-900 text-stone-400">-- Select Auth Key --</option>
+              <option value="" className="bg-[#111411] text-[#929a8d]">-- Select Auth Key --</option>
               {apiKeyList.map((k) => (
-                <option key={k.id} value={`byos_live_${k.keyPrefix}`} className="bg-stone-900 text-white">
+                <option key={k.id} value={`byos_live_${k.keyPrefix}`} className="bg-[#111411] text-[#f0f2eb]">
                   Key: {k.name} ({k.keyPrefix}...)
                 </option>
               ))}
@@ -383,7 +386,7 @@ function ObjectBrowserContent() {
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={`relative overflow-hidden rounded-2xl border-2 border-dashed p-8 text-center transition-all cursor-pointer ${
-          isDragging ? "border-emerald-400 bg-emerald-500/10" : "border-stone-800 bg-stone-900/40 hover:bg-stone-900/70 hover:border-stone-700"
+          isDragging ? "border-[#d8f99c] bg-[#d8f99c]/10" : "border-[#292d29] bg-[#111411] hover:bg-[#141814] hover:border-[#384038]"
         }`}
       >
         <input
@@ -395,35 +398,35 @@ function ObjectBrowserContent() {
           }}
         />
         <div className="flex flex-col items-center justify-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-center text-emerald-400 shadow-md">
-            <Upload className={`w-6 h-6 ${uploading ? "animate-bounce" : ""}`} />
+          <div className="w-12 h-12 rounded-2xl bg-[#0e110e] border border-[#292d29] flex items-center justify-center text-[#d8f99c] shadow-sm">
+            <Upload className={`w-5 h-5 ${uploading ? "animate-bounce" : ""}`} />
           </div>
-          <div className="text-sm font-extrabold text-white">
+          <div className="text-sm font-semibold text-[#f0f2eb]">
             {uploading ? "Streaming transfer to Google Drive..." : "Click or Drag & Drop File Here to Upload"}
           </div>
-          <div className="text-xs text-stone-400 font-mono">
-            Target Destination: <code className="text-emerald-400 font-bold">/{selectedBucket}/{currentPrefix}</code>
+          <div className="text-xs text-[#929a8d] font-mono">
+            Target Destination: <code className="text-[#d8f99c] font-semibold">/{selectedBucket}/{currentPrefix}</code>
           </div>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-mono flex items-center space-x-2">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-mono flex items-center space-x-2">
           <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* BREADCRUMB NAVIGATION */}
-      <div className="flex items-center justify-between bg-stone-900/80 px-4 py-2.5 rounded-xl border border-stone-800 font-mono text-xs">
+      <div className="flex items-center justify-between bg-[#111411] px-4 py-2.5 rounded-xl border border-[#292d29] font-mono text-xs">
         <div className="flex items-center space-x-2 overflow-x-auto">
-          <Folder className="w-4 h-4 text-emerald-400 shrink-0" />
+          <Folder className="w-4 h-4 text-[#d8f99c] shrink-0" />
           <button
             onClick={() => {
               setCurrentPrefix("");
               setSelectedObject(null);
             }}
-            className="text-emerald-400 hover:underline font-bold"
+            className="text-[#d8f99c] hover:underline font-bold"
           >
             ROOT
           </button>
@@ -431,13 +434,13 @@ function ObjectBrowserContent() {
             const path = breadcrumbs.slice(0, idx + 1).join("/") + "/";
             return (
               <React.Fragment key={path}>
-                <span className="text-stone-600">/</span>
+                <span className="text-[#41483e]">/</span>
                 <button
                   onClick={() => {
                     setCurrentPrefix(path);
                     setSelectedObject(null);
                   }}
-                  className="text-cyan-300 hover:underline font-semibold shrink-0"
+                  className="text-[#d3d9cc] hover:underline font-medium shrink-0"
                 >
                   {crumb}
                 </button>
@@ -451,49 +454,48 @@ function ObjectBrowserContent() {
           size="icon"
           onClick={fetchObjects}
           disabled={loading || !activeApiKey}
-          className="h-7 w-7 text-stone-400 hover:text-emerald-400"
+          className="h-7 w-7 text-[#929a8d] hover:text-[#d8f99c] hover:bg-[#182018]"
           title="Refresh directory listing"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-emerald-400" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-[#d8f99c]" : ""}`} />
         </Button>
       </div>
 
-      {/* OBJECTS TABLE USING SHADCN PRIMITIVES */}
-      <Card className="bg-stone-900/60 border-stone-800 overflow-hidden shadow-sm">
-        <CardHeader className="py-4 px-6 bg-stone-900/80 border-b border-stone-800 flex flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-xs font-mono uppercase tracking-wider font-bold text-stone-300">
+      {/* OBJECTS TABLE USING LANDING SYSTEM STYLING */}
+      <Card className="bg-[#111411] border-[#292d29] overflow-hidden shadow-sm">
+        <CardHeader className="py-4 px-6 bg-[#0e110e] border-b border-[#292d29] flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-xs font-mono uppercase tracking-wider font-semibold text-[#929a8d]">
             Directory Contents ({foldersList.length} Folders, {filesList.length} Files)
           </CardTitle>
-          <span className="text-[11px] text-stone-500 font-mono">Delimiter: &apos;/&apos;</span>
+          <span className="text-[11px] text-[#555d52] font-mono">Delimiter: &apos;/&apos;</span>
         </CardHeader>
 
         {loading ? (
           <div className="p-6 space-y-4">
-            <Skeleton className="h-10 w-full bg-stone-900" />
-            <Skeleton className="h-10 w-full bg-stone-900" />
-            <Skeleton className="h-10 w-full bg-stone-900" />
-            <Skeleton className="h-10 w-full bg-stone-900" />
+            <Skeleton className="h-10 w-full bg-[#182018]" />
+            <Skeleton className="h-10 w-full bg-[#182018]" />
+            <Skeleton className="h-10 w-full bg-[#182018]" />
           </div>
         ) : foldersList.length === 0 && filesList.length === 0 ? (
-          <div className="py-6">
+          <div className="py-8">
             <EmptyState
               title="This directory is currently empty"
               description={activeApiKey ? "Drag & drop files above to upload your first cloud object into this folder." : "Please select an active API Key from the dropdown above to display encrypted contents."}
-              icon={<Folder className="w-8 h-8 text-stone-500" />}
+              icon={<Folder className="w-8 h-8 text-[#555d52]" />}
               badgeText="Directory Empty"
             />
           </div>
         ) : (
           <Table>
-            <TableHeader className="bg-stone-950/80">
-              <TableRow className="border-stone-800 hover:bg-transparent">
-                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Name & Path</TableHead>
-                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">File Size</TableHead>
-                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Modified Date</TableHead>
-                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-stone-400 font-bold">Sync Health Badge</TableHead>
+            <TableHeader className="bg-[#0e110e]">
+              <TableRow className="border-[#292d29] hover:bg-transparent">
+                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-[#929a8d] font-medium">Name & Path</TableHead>
+                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-[#929a8d] font-medium">File Size</TableHead>
+                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-[#929a8d] font-medium">Modified Date</TableHead>
+                <TableHead className="py-3.5 px-6 font-mono text-[11px] uppercase text-[#929a8d] font-medium">Sync Status</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-stone-800 text-sm">
+            <TableBody className="divide-y divide-[#292d29] text-sm">
               {/* Render Folders First */}
               {foldersList.map((f) => {
                 const displayFolder = f.slice(currentPrefix.length);
@@ -504,16 +506,16 @@ function ObjectBrowserContent() {
                       setCurrentPrefix(f);
                       setSelectedObject(null);
                     }}
-                    className="hover:bg-stone-800/50 transition-colors cursor-pointer border-stone-800/80 font-mono text-xs"
+                    className="hover:bg-[#182018]/50 transition-colors cursor-pointer border-[#292d29] font-mono text-xs"
                   >
-                    <TableCell className="py-4 px-6 flex items-center space-x-3 text-amber-300 font-bold">
-                      <Folder className="w-5 h-5 text-amber-400 shrink-0" />
+                    <TableCell className="py-4 px-6 flex items-center space-x-3 text-[#d8f99c] font-medium">
+                      <Folder className="w-4 h-4 text-[#d8f99c] shrink-0" />
                       <span className="truncate">{displayFolder}</span>
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-stone-500 font-mono">&mdash;</TableCell>
-                    <TableCell className="py-4 px-6 text-stone-500 font-mono">&mdash;</TableCell>
+                    <TableCell className="py-4 px-6 text-[#555d52] font-mono">&mdash;</TableCell>
+                    <TableCell className="py-4 px-6 text-[#555d52] font-mono">&mdash;</TableCell>
                     <TableCell className="py-4 px-6">
-                      <Badge variant="outline" className="text-[10px] uppercase bg-stone-800 text-stone-300 border-stone-700 font-mono">
+                      <Badge variant="outline" className="text-[10px] uppercase bg-[#182018] text-[#929a8d] border-[#292d29] font-mono">
                         Directory
                       </Badge>
                     </TableCell>
@@ -526,23 +528,23 @@ function ObjectBrowserContent() {
                 const displayFile = obj.Key.slice(currentPrefix.length);
                 const badge =
                   obj.SyncStatus === "synced"
-                    ? { color: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30", text: "🟢 Synced" }
+                    ? { color: "bg-[#182018] text-[#d8f99c] border-[#292d29]", text: "Synced" }
                     : obj.SyncStatus === "discovered_in_provider"
-                    ? { color: "bg-amber-500/10 text-amber-300 border-amber-500/30", text: "🟡 Discovered in Drive" }
-                    : { color: "bg-rose-500/10 text-rose-300 border-rose-500/30", text: "🔴 Missing in Provider" };
+                    ? { color: "bg-[#201d14] text-[#d9b15b] border-[#3d3623]", text: "Discovered in Drive" }
+                    : { color: "bg-[#251616] text-[#e06c6c] border-[#442222]", text: "Missing in Provider" };
 
                 return (
                   <TableRow
                     key={obj.Key}
                     onClick={() => handleSelectObject(obj)}
-                    className="cursor-pointer transition-colors hover:bg-stone-800/60 border-stone-800/80"
+                    className="cursor-pointer transition-colors hover:bg-[#182018]/60 border-[#292d29]"
                   >
-                    <TableCell className="py-4 px-6 font-semibold text-white flex items-center space-x-3 font-sans truncate">
-                      <span className="text-lg shrink-0">{getFileTypeIcon(obj.Key)}</span>
-                      <span className="truncate hover:text-emerald-400 transition-colors">{displayFile}</span>
+                    <TableCell className="py-4 px-6 font-medium text-[#f0f2eb] flex items-center space-x-3 font-sans truncate">
+                      <span className="shrink-0">{getFileTypeIcon(obj.Key)}</span>
+                      <span className="truncate hover:text-[#d8f99c] transition-colors">{displayFile}</span>
                     </TableCell>
-                    <TableCell className="py-4 px-6 font-mono text-stone-300 text-xs">{formatBytes(obj.Size)}</TableCell>
-                    <TableCell className="py-4 px-6 font-mono text-stone-400 text-xs">
+                    <TableCell className="py-4 px-6 font-mono text-[#929a8d] text-xs">{formatBytes(obj.Size)}</TableCell>
+                    <TableCell className="py-4 px-6 font-mono text-[#555d52] text-xs">
                       {obj.LastModified ? new Date(obj.LastModified).toLocaleDateString() : "Just now"}
                     </TableCell>
                     <TableCell className="py-4 px-6 font-mono text-xs">
@@ -558,18 +560,18 @@ function ObjectBrowserContent() {
         )}
       </Card>
 
-      {/* SHADCN SHEET SLIDE-OVER PANEL FOR OBJECT DETAILS */}
+      {/* SHEET SLIDE-OVER PANEL FOR OBJECT DETAILS */}
       <Sheet open={!!selectedObject} onOpenChange={(open) => { if (!open) setSelectedObject(null); }}>
-        <SheetContent side="right" className="w-full sm:max-w-md bg-stone-950 border-l border-stone-800 text-stone-100 p-6 overflow-y-auto space-y-6">
+        <SheetContent side="right" className="w-full sm:max-w-md bg-[#111411] border-l border-[#292d29] text-[#f0f2eb] p-6 overflow-y-auto space-y-6">
           {selectedObject && (
             <>
-              <SheetHeader className="text-left border-b border-stone-800 pb-4 pr-6">
-                <div className="text-[10px] font-mono font-bold uppercase text-emerald-400 tracking-wider">Object Metadata & Operations</div>
-                <SheetTitle className="text-lg font-extrabold text-white truncate font-sans flex items-center space-x-2 pt-1">
+              <SheetHeader className="text-left border-b border-[#292d29] pb-4 pr-6">
+                <div className="text-[10px] font-mono font-bold uppercase text-[#d8f99c] tracking-wider">Object Metadata & Operations</div>
+                <SheetTitle className="text-lg font-bold text-[#f0f2eb] truncate font-sans flex items-center space-x-2 pt-1">
                   <span>{getFileTypeIcon(selectedObject.Key)}</span>
                   <span className="truncate">{selectedObject.Key.split("/").pop()}</span>
                 </SheetTitle>
-                <SheetDescription className="text-xs text-stone-400 font-mono truncate">
+                <SheetDescription className="text-xs text-[#929a8d] font-mono truncate">
                   Key: /{selectedObject.Key}
                 </SheetDescription>
               </SheetHeader>
@@ -578,14 +580,14 @@ function ObjectBrowserContent() {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   onClick={handleDownload}
-                  className="bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-xs py-5 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                  className="bg-[#182018] hover:bg-[#202b20] border border-[#292d29] text-[#f0f2eb] font-semibold text-xs py-5 rounded-xl transition-colors"
                 >
-                  <Download className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                  <Download className="w-3.5 h-3.5 mr-1.5 shrink-0 text-[#d8f99c]" />
                   Download Stream
                 </Button>
                 <Button
                   onClick={handleGenerateSignedUrl}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold text-xs py-5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                  className="bg-[#d8f99c] hover:bg-[#cbf187] text-[#0c0e0d] font-semibold text-xs py-5 rounded-xl transition-colors"
                 >
                   {copiedUrl ? <Check className="w-3.5 h-3.5 mr-1.5 shrink-0" /> : <Copy className="w-3.5 h-3.5 mr-1.5 shrink-0" />}
                   {copiedUrl ? "Copied URL!" : "1-Hr Signed Link"}
@@ -593,47 +595,48 @@ function ObjectBrowserContent() {
               </div>
 
               {signedUrl && (
-                <div className="p-3.5 rounded-xl bg-stone-900 border border-emerald-500/40 space-y-1.5 text-xs font-mono break-all">
-                  <div className="text-[10px] text-emerald-400 font-bold uppercase flex items-center space-x-1">
-                    <span>✅ Presigned Transfer Token Active</span>
+                <div className="p-3.5 rounded-xl bg-[#0e110e] border border-[#292d29] space-y-1.5 text-xs font-mono break-all">
+                  <div className="text-[10px] text-[#d8f99c] font-medium uppercase flex items-center space-x-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d8f99c]" />
+                    <span>Presigned Transfer Token Active</span>
                   </div>
-                  <div className="text-stone-300 text-[11px] max-h-24 overflow-y-auto pr-1 bg-stone-950 p-2 rounded border border-stone-800">{signedUrl}</div>
+                  <div className="text-[#929a8d] text-[11px] max-h-24 overflow-y-auto pr-1 bg-[#111411] p-2 rounded border border-[#292d29]">{signedUrl}</div>
                 </div>
               )}
 
               {/* Metadata Summary */}
-              <div className="space-y-2.5 font-mono text-xs bg-stone-900/60 p-4 rounded-2xl border border-stone-800">
+              <div className="space-y-2.5 font-mono text-xs bg-[#0e110e] p-4 rounded-xl border border-[#292d29]">
                 <div className="flex justify-between items-center">
-                  <span className="text-stone-400">Full Key Path:</span>
-                  <span className="text-cyan-300 truncate max-w-[180px] font-bold" title={selectedObject.Key}>{selectedObject.Key}</span>
+                  <span className="text-[#929a8d]">Full Key Path:</span>
+                  <span className="text-[#f0f2eb] truncate max-w-[180px] font-medium" title={selectedObject.Key}>{selectedObject.Key}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-stone-400">File Size:</span>
-                  <span className="text-white font-extrabold">{formatBytes(selectedObject.Size)}</span>
+                  <span className="text-[#929a8d]">File Size:</span>
+                  <span className="text-[#f0f2eb] font-semibold">{formatBytes(selectedObject.Size)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-stone-400">Content ETag:</span>
-                  <span className="text-stone-300 truncate max-w-[140px]">{selectedObject.ETag || "Computed Hash"}</span>
+                  <span className="text-[#929a8d]">Content ETag:</span>
+                  <span className="text-[#929a8d] truncate max-w-[140px]">{selectedObject.ETag || "Computed Hash"}</span>
                 </div>
               </div>
 
               {/* VERSION HISTORY SNAPSHOTS */}
-              <div className="space-y-3 pt-3 border-t border-stone-800">
+              <div className="space-y-3 pt-3 border-t border-[#292d29]">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-extrabold text-white uppercase tracking-wider flex items-center space-x-1.5 font-mono text-[11px]">
-                    <History className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-semibold text-[#f0f2eb] uppercase tracking-wider flex items-center space-x-1.5 font-mono text-[11px]">
+                    <History className="w-4 h-4 text-[#d8f99c] shrink-0" />
                     <span>Version Snapshots ({versions.length})</span>
                   </span>
-                  <span className="text-[10px] text-stone-500 font-mono">Keep Last 10</span>
+                  <span className="text-[10px] text-[#555d52] font-mono">Keep Last 10</span>
                 </div>
 
                 {loadingVersions ? (
                   <div className="space-y-2">
-                    <Skeleton className="h-14 w-full bg-stone-900 rounded-xl" />
-                    <Skeleton className="h-14 w-full bg-stone-900 rounded-xl" />
+                    <Skeleton className="h-14 w-full bg-[#182018] rounded-xl" />
+                    <Skeleton className="h-14 w-full bg-[#182018] rounded-xl" />
                   </div>
                 ) : versions.length === 0 ? (
-                  <div className="p-4 rounded-xl bg-stone-900/60 text-center text-stone-400 text-xs font-mono border border-stone-800">
+                  <div className="p-4 rounded-xl bg-[#0e110e] text-center text-[#929a8d] text-xs font-mono border border-[#292d29]">
                     No previous version archives recorded.
                   </div>
                 ) : (
@@ -641,14 +644,14 @@ function ObjectBrowserContent() {
                     {versions.map((v, i) => (
                       <div
                         key={v.VersionId}
-                        className="p-3 rounded-xl bg-stone-900 border border-stone-800 flex items-center justify-between group"
+                        className="p-3 rounded-xl bg-[#0e110e] border border-[#292d29] flex items-center justify-between group"
                       >
                         <div>
-                          <div className="font-bold text-stone-200 flex items-center space-x-2">
+                          <div className="font-semibold text-[#f0f2eb] flex items-center space-x-2">
                             <span>Version {v.VersionNumber}</span>
-                            {i === 0 && <Badge variant="outline" className="px-1.5 py-0 rounded text-[9px] bg-emerald-500/20 text-emerald-400 border-emerald-500/30 uppercase font-mono">Latest</Badge>}
+                            {i === 0 && <Badge variant="outline" className="px-1.5 py-0 rounded text-[9px] bg-[#182018] text-[#d8f99c] border-[#292d29] uppercase font-mono">Latest</Badge>}
                           </div>
-                          <div className="text-[10px] text-stone-500 mt-0.5">
+                          <div className="text-[10px] text-[#555d52] mt-0.5">
                             {new Date(v.CreatedAt).toLocaleString()} ({formatBytes(v.Size)})
                           </div>
                         </div>
@@ -657,7 +660,7 @@ function ObjectBrowserContent() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleRestoreVersion(v.VersionId)}
-                            className="h-7 px-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px] font-bold"
+                            className="h-7 px-2.5 rounded-lg bg-[#182018] hover:bg-[#202b20] text-[#d8f99c] border-[#292d29] text-[10px] font-semibold"
                           >
                             Restore
                           </Button>
@@ -669,11 +672,11 @@ function ObjectBrowserContent() {
               </div>
 
               {/* DELETE BUTTON */}
-              <div className="pt-4 border-t border-stone-800">
+              <div className="pt-4 border-t border-[#292d29]">
                 <Button
                   variant="outline"
                   onClick={handleDelete}
-                  className="w-full py-5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400 hover:text-rose-300 text-xs font-extrabold"
+                  className="w-full py-5 rounded-xl bg-[#251616] hover:bg-[#341b1b] border-[#442222] text-[#e06c6c] hover:text-[#f28b8b] text-xs font-semibold"
                 >
                   <Trash2 className="w-4 h-4 mr-2 shrink-0" />
                   Delete from Google Drive
@@ -692,8 +695,8 @@ export default function ObjectBrowserPage() {
     <Suspense
       fallback={
         <div className="p-8 space-y-6">
-          <Skeleton className="h-12 w-full rounded-xl bg-stone-900" />
-          <Skeleton className="h-[500px] w-full rounded-2xl bg-stone-900" />
+          <Skeleton className="h-12 w-full rounded-xl bg-[#182018]" />
+          <Skeleton className="h-[500px] w-full rounded-2xl bg-[#182018]" />
         </div>
       }
     >

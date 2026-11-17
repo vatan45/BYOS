@@ -3,15 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Settings,
   HardDrive,
   LogOut,
-  CreditCard,
-  ShieldCheck,
+  ArrowUpRight,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
@@ -76,30 +72,27 @@ export default function SettingsPage() {
 
   if (!loading && !overview) {
     return (
-      <div
-        role="alert"
-        className="rounded-xl border border-stone-800 bg-stone-900/60 p-8 space-y-4 max-w-xl mx-auto text-center"
-      >
-        <h1 className="text-xl font-medium text-white">Unable to load settings</h1>
-        <p className="text-sm text-stone-400">
+      <div className="p-8 border border-[#292d29] rounded-lg bg-[#111411] text-center max-w-md mx-auto my-12">
+        <h3 className="text-lg font-medium text-[#f0f2eb]">Unable to load settings</h3>
+        <p className="text-xs text-[#929a8d] mt-2 mb-4">
           Check your connection and sign in again.
         </p>
-        <Button
+        <button
           onClick={() => fetchOverview()}
-          className="rounded-lg bg-emerald-400 text-stone-950 px-4 py-2 text-xs font-medium"
+          className="action small"
         >
           Try again
-        </Button>
+        </button>
       </div>
     );
   }
 
   if (loading || !overview) {
     return (
-      <div className="space-y-6 max-w-4xl mx-auto pb-12">
-        <Skeleton className="h-8 w-48 bg-stone-900 rounded-lg" />
-        <Skeleton className="h-64 w-full bg-stone-900 rounded-xl" />
-        <Skeleton className="h-64 w-full bg-stone-900 rounded-xl" />
+      <div className="space-y-6">
+        <Skeleton className="h-6 w-36 bg-[#161a16]" />
+        <Skeleton className="h-44 w-full bg-[#161a16] rounded-lg" />
+        <Skeleton className="h-44 w-full bg-[#161a16] rounded-lg" />
       </div>
     );
   }
@@ -107,42 +100,30 @@ export default function SettingsPage() {
   const isConnected = overview.connection.connected;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto pb-12">
-      {/* HEADER SECTION */}
-      <div className="border-b border-stone-800/80 pb-6">
-        <h1 className="text-2xl font-semibold text-white tracking-tight flex items-center space-x-2.5">
-          <Settings className="w-6 h-6 text-emerald-400" />
-          <span>Settings</span>
-        </h1>
-        <p className="text-stone-400 text-sm mt-1">
-          Connected storage, account plan, and credentials.
-        </p>
+    <div className="space-y-8 max-w-4xl">
+      {/* HEADING */}
+      <div className="preview-heading">
+        <div>
+          <span className="muted">PREFERENCES & STORAGE</span>
+          <h3>Settings</h3>
+        </div>
       </div>
 
-      {/* STORAGE CONNECTION CARD */}
-      <Card className="p-6 rounded-xl border-stone-800/80 bg-stone-900/40 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800/80 pb-5">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-emerald-400 shrink-0">
-              <HardDrive className="w-5 h-5" />
+      {/* STORAGE CONNECTION SECTION */}
+      <div className="border border-[#292d29] rounded-lg bg-[#111411] p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-lg bg-[#1a2018] flex items-center justify-center text-[#d8f99c] shrink-0">
+              <HardDrive size={20} />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-base font-medium text-white">
-                  Google Drive
-                </h2>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] font-mono ${
-                    isConnected
-                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                      : "bg-stone-800 text-stone-400 border-stone-700"
-                  }`}
-                >
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-[#f0f2eb]">Google Drive</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0c0e0d] border border-[#292d29] text-[#929a8d]">
                   {isConnected ? "Connected" : "Disconnected"}
-                </Badge>
+                </span>
               </div>
-              <p className="text-xs text-stone-400 mt-0.5">
+              <p className="text-xs text-[#929a8d] mt-0.5">
                 {isConnected
                   ? overview.connection.email
                   : "Connect your Google account to store files."}
@@ -152,108 +133,67 @@ export default function SettingsPage() {
 
           <div>
             {isConnected ? (
-              <Button
-                variant="outline"
+              <button
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="border-stone-800 hover:bg-stone-800 text-stone-300 hover:text-rose-400 text-xs rounded-lg px-3 py-1.5"
+                className="text-xs border border-[#292d29] hover:border-rose-500/40 text-[#929a8d] hover:text-rose-400 rounded px-3 py-1.5 flex items-center gap-1.5 transition-colors"
               >
-                <LogOut className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                <LogOut size={13} />
                 {disconnecting ? "Disconnecting…" : "Disconnect"}
-              </Button>
+              </button>
             ) : (
               <a
                 href="/api/auth/google/connect"
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-medium text-xs space-x-1.5 transition-colors"
+                className="action small"
               >
-                <HardDrive className="w-3.5 h-3.5 shrink-0" />
-                <span>Connect Google Drive</span>
+                <HardDrive size={13} /> Connect Drive <ArrowUpRight size={13} />
               </a>
             )}
           </div>
         </div>
 
-        {/* SAFE DISCONNECTION NOTE */}
-        <div className="p-4 rounded-lg bg-stone-900/60 border border-stone-800 text-xs text-stone-400 space-y-1">
-          <p className="font-medium text-stone-300">Your files remain in Google Drive</p>
-          <p className="leading-relaxed">
-            Disconnecting removes the OAuth tokens used for API access, but does not delete any files. Everything created by BYOS remains in your Google Drive and accessible anytime.
+        <div className="pt-4 border-t border-[#242a22] text-xs text-[#929a8d] space-y-1">
+          <span className="text-stone-300 font-medium block">Your files stay in your Google Drive</span>
+          <p>
+            Disconnecting removes the API session, but does not delete any of your files. All buckets and objects remain in your Google Drive.
           </p>
         </div>
+      </div>
 
-        {/* SECURITY & PRIVACY */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
-          <div className="p-3.5 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-1">
-            <div className="text-emerald-400 font-medium flex items-center space-x-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>Isolated scope</span>
-            </div>
-            <p className="text-stone-400 text-[11px] leading-relaxed">
-              Access is limited to the <code className="text-stone-300 font-mono">drive.file</code> scope. BYOS cannot access other files in your Drive.
-            </p>
+      {/* ACCOUNT PLAN SECTION */}
+      <div className="border border-[#292d29] rounded-lg bg-[#111411] p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="muted">SUBSCRIPTION</span>
+            <h4 className="text-sm font-medium text-[#f0f2eb] mt-1">Plan and limits</h4>
           </div>
-          <div className="p-3.5 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-1">
-            <div className="text-emerald-400 font-medium flex items-center space-x-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>Direct transfers</span>
-            </div>
-            <p className="text-stone-400 text-[11px] leading-relaxed">
-              Files are transferred directly using signed URLs, with no intermediate storage proxies or egress fees.
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      {/* ACCOUNT PLAN */}
-      <Card className="p-6 rounded-xl border-stone-800/80 bg-stone-900/40 space-y-5">
-        <div className="flex items-center justify-between border-b border-stone-800/80 pb-4">
-          <div className="flex items-center space-x-3">
-            <CreditCard className="w-5 h-5 text-emerald-400 shrink-0" />
-            <div>
-              <h2 className="font-medium text-white text-base">
-                Plan & limits
-              </h2>
-              <p className="text-xs text-stone-400">
-                Your current workspace tier and quotas.
-              </p>
-            </div>
-          </div>
-          <Badge
-            variant="outline"
-            className="px-2.5 py-0.5 rounded-md bg-stone-800 text-stone-300 border-stone-700 text-xs font-mono uppercase"
-          >
-            {overview.user.plan}
-          </Badge>
+          <span className="text-xs font-mono uppercase px-2 py-0.5 rounded bg-[#0c0e0d] border border-[#292d29] text-[#d8f99c]">
+            {overview.user.plan} plan
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-4 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-3">
-            <div className="flex justify-between items-center font-medium text-stone-300">
-              <span>Free tier</span>
-              <span className="text-stone-500">$0/mo</span>
-            </div>
-            <ul className="space-y-1.5 text-stone-400">
-              <li>1 storage bucket</li>
-              <li>20 active API keys</li>
-              <li>Standard rate limits (100 req/min)</li>
-              <li>Google Drive storage limit applies</li>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
+          <div className="p-4 rounded border border-[#242a22] bg-[#0c0e0d] space-y-2">
+            <span className="font-medium text-[#f0f2eb] block">Free plan</span>
+            <ul className="space-y-1 text-[#929a8d]">
+              <li>• 1 storage bucket</li>
+              <li>• 20 active API keys</li>
+              <li>• 100 requests/minute</li>
+              <li>• Google Drive storage limits</li>
             </ul>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#0c0e0d] border border-stone-800/80 space-y-3">
-            <div className="flex justify-between items-center font-medium text-stone-300">
-              <span>Pro tier</span>
-              <span className="text-emerald-400">Upgrade</span>
-            </div>
-            <ul className="space-y-1.5 text-stone-400">
-              <li>Unlimited storage buckets</li>
-              <li>Unlimited active API keys</li>
-              <li>High-throughput rate limits (1,000 req/min)</li>
-              <li>Priority support</li>
+          <div className="p-4 rounded border border-[#242a22] bg-[#0c0e0d] space-y-2">
+            <span className="font-medium text-[#f0f2eb] block">Pro plan</span>
+            <ul className="space-y-1 text-[#929a8d]">
+              <li>• Unlimited storage buckets</li>
+              <li>• Unlimited active API keys</li>
+              <li>• 1,000 requests/minute</li>
+              <li>• Priority support</li>
             </ul>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

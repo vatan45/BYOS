@@ -440,16 +440,11 @@ export default function S3PlaygroundPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800 pb-6">
-        <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-stone-800 border border-stone-700 text-stone-300 text-xs font-mono mb-2">
-            <span>S3 Protocol & API Studio</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight flex items-center space-x-2.5">
-            <Terminal className="w-7 h-7 text-emerald-400" />
-            <span>S3 Storage Studio</span>
-          </h1>
-          <p className="text-stone-400 text-sm mt-1 font-sans">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+        <div className="preview-heading">
+          <h6>DEVELOPER STUDIO</h6>
+          <h1>S3 Playground</h1>
+          <p className="muted">
             Execute operations and verify protocol behaviors directly against your connected Google Drive storage.
           </p>
         </div>
@@ -457,31 +452,31 @@ export default function S3PlaygroundPage() {
         {/* DRIVE HEALTH & BUCKET SELECTOR */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {isConnected ? (
-            <Badge variant="outline" className="py-2.5 px-4 rounded-xl bg-stone-900 border-stone-800 text-stone-200 font-mono flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <div className="py-2 px-3.5 rounded-xl bg-[#111411] border border-[#292d29] text-[#d3d9cc] font-mono text-xs flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-[#d8f99c]" />
               <span className="truncate max-w-[200px]">Connected: {connectionEmail}</span>
-            </Badge>
+            </div>
           ) : (
             <a href="/api/auth/google/connect">
-              <Button className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold rounded-xl px-5 py-6 shadow-[0_0_25px_rgba(16,185,129,0.4)] flex items-center space-x-2 w-full sm:w-auto">
-                <HardDrive className="w-5 h-5 mr-1.5" />
-                <span>Connect Google Drive to Test</span>
-                <ArrowRight className="w-4 h-4" />
+              <Button className="preview-create">
+                <HardDrive className="w-4 h-4 mr-1.5" />
+                <span>Connect Google Drive</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </a>
           )}
 
           {isConnected && (
-            <div className="flex items-center space-x-2 bg-stone-900 px-3.5 py-2 rounded-xl border border-stone-800">
-              <Database className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center space-x-2 bg-[#111411] px-3.5 py-2 rounded-xl border border-[#292d29]">
+              <Database className="w-4 h-4 text-[#d8f99c] shrink-0" />
               <select
                 value={selectedBucket}
                 onChange={(e) => setSelectedBucket(e.target.value)}
-                className="bg-transparent text-white font-mono text-xs font-bold focus:outline-none pr-4 cursor-pointer"
+                className="bg-transparent text-[#f0f2eb] font-mono text-xs font-medium focus:outline-none pr-4 cursor-pointer"
               >
                 {buckets.length === 0 && <option value="">No Buckets Yet</option>}
                 {buckets.map((b) => (
-                  <option key={b.id} value={b.name} className="bg-stone-900 text-white">
+                  <option key={b.id} value={b.name} className="bg-[#111411] text-[#f0f2eb]">
                     Bucket: {b.name} ({b.objectCount} objs)
                   </option>
                 ))}
@@ -491,9 +486,9 @@ export default function S3PlaygroundPage() {
                 size="icon"
                 onClick={() => setShowNewBucketDialog(true)}
                 title="Provision test bucket"
-                className="h-7 w-7 text-emerald-400 hover:bg-stone-800 shrink-0"
+                className="h-7 w-7 text-[#d8f99c] hover:bg-[#182018] shrink-0"
               >
-                <Plus className="w-4 h-4 stroke-[3]" />
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
           )}
@@ -502,18 +497,18 @@ export default function S3PlaygroundPage() {
 
       {/* DISCONNECTED STATE ALERT */}
       {!isConnected && !loadingOverview && (
-        <Card className="p-6 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Card className="p-6 bg-[#111411] border border-[#292d29] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start space-x-3">
-            <AlertCircle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-[#d8f99c] shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-base font-bold text-white font-sans">Google Drive Storage Not Bound Yet</h3>
-              <p className="text-xs text-stone-300 font-sans mt-0.5">
-                To test real file transfers and object versioning, authorize BYOS to create an isolated <code className="text-emerald-400 font-mono">drive.file</code> staging folder inside your Google Drive.
+              <h3 className="text-sm font-semibold text-[#f0f2eb] font-sans">Google Drive Storage Not Bound Yet</h3>
+              <p className="text-xs text-[#929a8d] font-sans mt-0.5">
+                To test real file transfers and object versioning, authorize BYOS to create an isolated <code className="text-[#d8f99c] font-mono">drive.file</code> staging folder inside your Google Drive.
               </p>
             </div>
           </div>
           <a href="/api/auth/google/connect" className="shrink-0 w-full sm:w-auto">
-            <Button className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black px-6 py-5 rounded-xl text-xs uppercase tracking-wider shadow-lg">
+            <Button className="preview-create w-full sm:w-auto">
               Connect Google Drive &rarr;
             </Button>
           </a>
@@ -525,34 +520,34 @@ export default function S3PlaygroundPage() {
         
         {/* LEFT COLUMN: INTERACTIVE OPERATIONAL CONTROLS (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
-          <Card className="bg-stone-900/60 border-stone-800 overflow-hidden shadow-lg">
-            <CardHeader className="p-6 bg-stone-900/80 border-b border-stone-800">
+          <Card className="bg-[#111411] border-[#292d29] overflow-hidden shadow-lg">
+            <CardHeader className="p-6 bg-[#0e110e] border-b border-[#292d29]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2.5">
-                  <Zap className="w-5 h-5 text-cyan-400" />
-                  <CardTitle className="font-extrabold text-white text-base">S3 Protocol Execution Bench</CardTitle>
+                  <Zap className="w-5 h-5 text-[#d8f99c]" />
+                  <CardTitle className="font-bold text-[#f0f2eb] text-base">S3 Protocol Execution Bench</CardTitle>
                 </div>
-                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-mono text-[10px]">
+                <Badge className="bg-[#182018] text-[#d8f99c] border-[#292d29] font-mono text-[10px]">
                   Zero Runtime Overhead
                 </Badge>
               </div>
             </CardHeader>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="p-6 space-y-6">
-              <TabsList className="bg-stone-950 p-1 rounded-2xl border border-stone-800 grid grid-cols-4 w-full">
-                <TabsTrigger value="upload" className="rounded-xl font-bold text-xs py-2 data-[state=active]:bg-stone-800 data-[state=active]:text-emerald-400">
+              <TabsList className="bg-[#0e110e] p-1 rounded-2xl border border-[#292d29] grid grid-cols-4 w-full">
+                <TabsTrigger value="upload" className="rounded-xl font-semibold text-xs py-2 data-[state=active]:bg-[#182018] data-[state=active]:text-[#d8f99c] text-[#929a8d]">
                   <Upload className="w-3.5 h-3.5 mr-1.5" />
                   Upload
                 </TabsTrigger>
-                <TabsTrigger value="list" className="rounded-xl font-bold text-xs py-2 data-[state=active]:bg-stone-800 data-[state=active]:text-cyan-400">
+                <TabsTrigger value="list" className="rounded-xl font-semibold text-xs py-2 data-[state=active]:bg-[#182018] data-[state=active]:text-[#d8f99c] text-[#929a8d]">
                   <Layers className="w-3.5 h-3.5 mr-1.5" />
                   Browse ({objectList.length})
                 </TabsTrigger>
-                <TabsTrigger value="edit" className="rounded-xl font-bold text-xs py-2 data-[state=active]:bg-stone-800 data-[state=active]:text-amber-400">
+                <TabsTrigger value="edit" className="rounded-xl font-semibold text-xs py-2 data-[state=active]:bg-[#182018] data-[state=active]:text-[#d8f99c] text-[#929a8d]">
                   <Code className="w-3.5 h-3.5 mr-1.5" />
                   Edit / Update
                 </TabsTrigger>
-                <TabsTrigger value="security" className="rounded-xl font-bold text-xs py-2 data-[state=active]:bg-stone-800 data-[state=active]:text-purple-400">
+                <TabsTrigger value="security" className="rounded-xl font-semibold text-xs py-2 data-[state=active]:bg-[#182018] data-[state=active]:text-[#d8f99c] text-[#929a8d]">
                   <ShieldCheck className="w-3.5 h-3.5 mr-1.5" />
                   Sign & Delete
                 </TabsTrigger>
@@ -561,35 +556,35 @@ export default function S3PlaygroundPage() {
               {/* TAB 1: UPLOAD (PUT OBJECT) */}
               <TabsContent value="upload" className="space-y-5">
                 <div className="space-y-3">
-                  <Label className="text-xs font-mono font-bold uppercase text-stone-300">
+                  <Label className="text-xs font-mono font-medium uppercase text-[#929a8d]">
                     Target Object Key Path in S3 Bucket
                   </Label>
                   <Input
                     value={uploadKey}
                     onChange={(e) => setUploadKey(e.target.value)}
                     placeholder="e.g., config/database-settings.json"
-                    className="bg-stone-950 border-stone-800 text-white font-mono text-sm rounded-xl focus-visible:ring-emerald-500"
+                    className="bg-[#0e110e] border-[#292d29] text-[#f0f2eb] font-mono text-sm rounded-xl focus-visible:ring-[#d8f99c]"
                   />
-                  <p className="text-[11px] text-stone-500 font-mono">
+                  <p className="text-[11px] text-[#555d52] font-mono">
                     Slashes (&apos;/&apos;) will automatically organize files into clean virtual folders inside Google Drive.
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <Label className="text-xs font-mono font-bold uppercase text-stone-300">Payload Content Mode</Label>
-                    <div className="flex items-center space-x-2 bg-stone-950 p-1 rounded-xl border border-stone-800 text-xs font-mono">
+                    <Label className="text-xs font-mono font-medium uppercase text-[#929a8d]">Payload Content Mode</Label>
+                    <div className="flex items-center space-x-2 bg-[#0e110e] p-1 rounded-xl border border-[#292d29] text-xs font-mono">
                       <button
                         type="button"
                         onClick={() => setUploadMode("text")}
-                        className={`px-3 py-1 rounded-lg transition-colors ${uploadMode === "text" ? "bg-emerald-500 text-stone-950 font-bold" : "text-stone-400 hover:text-white"}`}
+                        className={`px-3 py-1 rounded-lg transition-colors ${uploadMode === "text" ? "bg-[#d8f99c] text-[#0c0e0d] font-semibold" : "text-[#929a8d] hover:text-[#f0f2eb]"}`}
                       >
                         JSON / Text
                       </button>
                       <button
                         type="button"
                         onClick={() => setUploadMode("file")}
-                        className={`px-3 py-1 rounded-lg transition-colors ${uploadMode === "file" ? "bg-emerald-500 text-stone-950 font-bold" : "text-stone-400 hover:text-white"}`}
+                        className={`px-3 py-1 rounded-lg transition-colors ${uploadMode === "file" ? "bg-[#d8f99c] text-[#0c0e0d] font-semibold" : "text-[#929a8d] hover:text-[#f0f2eb]"}`}
                       >
                         File Attachment
                       </button>
@@ -601,12 +596,12 @@ export default function S3PlaygroundPage() {
                       rows={7}
                       value={textPayload}
                       onChange={(e) => setTextPayload(e.target.value)}
-                      className="w-full p-4 rounded-2xl bg-stone-950 border border-stone-800 text-emerald-300 font-mono text-xs focus:outline-none focus:border-emerald-500 leading-relaxed"
+                      className="w-full p-4 rounded-2xl bg-[#0e110e] border border-[#292d29] text-[#d8f99c] font-mono text-xs focus:outline-none focus:border-[#d8f99c] leading-relaxed"
                     />
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-stone-800 hover:border-emerald-500 bg-stone-950 p-8 rounded-2xl text-center cursor-pointer transition-all flex flex-col items-center justify-center space-y-2"
+                      className="border-2 border-dashed border-[#292d29] hover:border-[#d8f99c] bg-[#0e110e] p-8 rounded-2xl text-center cursor-pointer transition-all flex flex-col items-center justify-center space-y-2"
                     >
                       <input
                         ref={fileInputRef}
@@ -619,11 +614,11 @@ export default function S3PlaygroundPage() {
                           }
                         }}
                       />
-                      <Upload className="w-7 h-7 text-emerald-400" />
-                      <div className="text-sm font-bold text-white">
+                      <Upload className="w-7 h-7 text-[#d8f99c]" />
+                      <div className="text-sm font-semibold text-[#f0f2eb]">
                         {selectedFile ? `Selected: ${selectedFile.name} (${Math.round(selectedFile.size / 1024)} KB)` : "Click to select a binary file from your computer"}
                       </div>
-                      <div className="text-xs text-stone-500 font-mono">Supports MP4 video, images, ZIP archives, and PDF documents</div>
+                      <div className="text-xs text-[#555d52] font-mono">Supports MP4 video, images, ZIP archives, and PDF documents</div>
                     </div>
                   )}
                 </div>
@@ -631,9 +626,9 @@ export default function S3PlaygroundPage() {
                 <Button
                   onClick={handleExecuteUpload}
                   disabled={!isConnected || !selectedBucket || executingUpload}
-                  className="w-full py-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-stone-950 font-black text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all"
+                  className="w-full py-6 rounded-2xl bg-[#d8f99c] hover:bg-[#cbf187] disabled:opacity-50 text-[#0c0e0d] font-bold text-sm uppercase tracking-wider transition-all"
                 >
-                  {executingUpload ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : <Play className="w-5 h-5 mr-2 stroke-[3]" />}
+                  {executingUpload ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : <Play className="w-5 h-5 mr-2" />}
                   {executingUpload ? "Streaming to Google Drive..." : "Execute S3 PUT Object Request"}
                 </Button>
               </TabsContent>
@@ -641,22 +636,22 @@ export default function S3PlaygroundPage() {
               {/* TAB 2: LIST & BROWSE */}
               <TabsContent value="list" className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="text-xs font-mono text-stone-400">
-                    Objects in <strong className="text-white">/{selectedBucket}</strong>
+                  <div className="text-xs font-mono text-[#929a8d]">
+                    Objects in <strong className="text-[#f0f2eb]">/{selectedBucket}</strong>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => refreshObjectList(selectedBucket)}
-                    className="h-8 px-3 text-xs bg-stone-950 border-stone-800 text-stone-300 font-mono"
+                    className="h-8 px-3 text-xs bg-[#0e110e] border-[#292d29] text-[#d3d9cc] font-mono hover:bg-[#182018]"
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loadingList ? "animate-spin text-cyan-400" : ""}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loadingList ? "animate-spin text-[#d8f99c]" : ""}`} />
                     Refresh Listing
                   </Button>
                 </div>
 
                 {objectList.length === 0 ? (
-                  <div className="py-12 text-center text-stone-500 font-mono text-xs border border-stone-800/80 rounded-2xl bg-stone-950">
+                  <div className="py-12 text-center text-[#555d52] font-mono text-xs border border-[#292d29] rounded-2xl bg-[#0e110e]">
                     No stored objects discovered in this bucket. Switch to the Upload tab to test storing files!
                   </div>
                 ) : (
@@ -672,16 +667,16 @@ export default function S3PlaygroundPage() {
                             handleReadContent(obj.Key);
                           }}
                           className={`p-3.5 rounded-xl border font-mono text-xs flex items-center justify-between transition-all cursor-pointer ${
-                            isSelected ? "bg-cyan-500/15 border-cyan-400/80 text-white font-bold" : "bg-stone-950 border-stone-800 text-stone-400 hover:text-stone-200 hover:bg-stone-900"
+                            isSelected ? "bg-[#182018] border-[#d8f99c] text-[#f0f2eb] font-semibold" : "bg-[#0e110e] border-[#292d29] text-[#929a8d] hover:text-[#f0f2eb] hover:bg-[#141814]"
                           }`}
                         >
                           <div className="flex items-center space-x-2.5 truncate pr-2">
-                            <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
+                            <FileText className="w-4 h-4 text-[#d8f99c] shrink-0" />
                             <span className="truncate">{obj.Key}</span>
                           </div>
-                          <div className="flex items-center space-x-4 shrink-0 text-stone-500 text-[11px]">
+                          <div className="flex items-center space-x-4 shrink-0 text-[#555d52] text-[11px]">
                             <span>{Math.round(obj.Size / 1024)} KB</span>
-                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-stone-900 text-stone-400 border-stone-700 font-mono">
+                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-[#111411] text-[#929a8d] border-[#292d29] font-mono">
                               ETag: {obj.ETag ? obj.ETag.slice(0, 6) + ".." : "OK"}
                             </Badge>
                           </div>
@@ -693,10 +688,10 @@ export default function S3PlaygroundPage() {
 
                 {/* Content Reader Box */}
                 {selectedObjKey && (
-                  <div className="space-y-2 pt-4 border-t border-stone-800">
+                  <div className="space-y-2 pt-4 border-t border-[#292d29]">
                     <div className="flex items-center justify-between">
-                      <Label className="text-[11px] font-mono font-bold uppercase text-stone-300 flex items-center space-x-1.5">
-                        <Code className="w-3.5 h-3.5 text-cyan-400" />
+                      <Label className="text-[11px] font-mono font-medium uppercase text-[#929a8d] flex items-center space-x-1.5">
+                        <Code className="w-3.5 h-3.5 text-[#d8f99c]" />
                         <span>Object Content: {selectedObjKey}</span>
                       </Label>
                       <Button
@@ -706,13 +701,13 @@ export default function S3PlaygroundPage() {
                           const url = `/api/v1/buckets/${encodeURIComponent(selectedBucket)}/objects/${encodeURIComponent(selectedObjKey)}`;
                           window.open(url, "_blank");
                         }}
-                        className="text-xs text-stone-400 hover:text-white font-mono h-7"
+                        className="text-xs text-[#929a8d] hover:text-[#f0f2eb] font-mono h-7"
                       >
                         <ExternalLink className="w-3 h-3 mr-1" />
                         Raw GET URL
                       </Button>
                     </div>
-                    <div className="p-4 rounded-2xl bg-stone-950 border border-stone-800 font-mono text-xs text-emerald-300 max-h-48 overflow-y-auto leading-relaxed">
+                    <div className="p-4 rounded-2xl bg-[#0e110e] border border-[#292d29] font-mono text-xs text-[#d8f99c] max-h-48 overflow-y-auto leading-relaxed">
                       {loadingContent ? "Streaming file bytes from Google Drive..." : viewingContent || "Click on an object above to stream its contents live."}
                     </div>
                   </div>
@@ -722,7 +717,7 @@ export default function S3PlaygroundPage() {
               {/* TAB 3: EDIT & OVERWRITE */}
               <TabsContent value="edit" className="space-y-5">
                 <div className="space-y-2">
-                  <Label className="text-xs font-mono font-bold uppercase text-stone-300">Select Object to Overwrite / Edit</Label>
+                  <Label className="text-xs font-mono font-medium uppercase text-[#929a8d]">Select Object to Overwrite / Edit</Label>
                   <select
                     value={editKey}
                     onChange={(e) => {
@@ -730,11 +725,11 @@ export default function S3PlaygroundPage() {
                       setSelectedObjKey(e.target.value);
                       handleReadContent(e.target.value);
                     }}
-                    className="w-full p-3.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                    className="w-full p-3.5 rounded-xl bg-[#0e110e] border border-[#292d29] text-[#f0f2eb] font-mono text-xs focus:outline-none focus:border-[#d8f99c] cursor-pointer"
                   >
-                    <option value="" className="bg-stone-900 text-stone-500">-- Choose Object --</option>
+                    <option value="" className="bg-[#111411] text-[#555d52]">-- Choose Object --</option>
                     {objectList.map((o) => (
-                      <option key={o.Key} value={o.Key} className="bg-stone-900 text-white">
+                      <option key={o.Key} value={o.Key} className="bg-[#111411] text-[#f0f2eb]">
                         {o.Key} ({Math.round(o.Size / 1024)} KB)
                       </option>
                     ))}
@@ -742,30 +737,30 @@ export default function S3PlaygroundPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-mono font-bold uppercase text-stone-300 flex items-center space-x-1.5">
-                        <Code className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Content Modification Editor</span>
-                      </Label>
+                  <Label className="text-xs font-mono font-medium uppercase text-[#929a8d] flex items-center space-x-1.5">
+                    <Code className="w-3.5 h-3.5 text-[#d8f99c]" />
+                    <span>Content Modification Editor</span>
+                  </Label>
                   <textarea
                     rows={8}
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                     placeholder="Select an existing text/JSON object above to edit its live payload..."
-                    className="w-full p-4 rounded-2xl bg-stone-950 border border-stone-800 text-amber-300 font-mono text-xs focus:outline-none focus:border-amber-500 leading-relaxed"
+                    className="w-full p-4 rounded-2xl bg-[#0e110e] border border-[#292d29] text-[#d8f99c] font-mono text-xs focus:outline-none focus:border-[#d8f99c] leading-relaxed"
                   />
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-stone-300 text-xs flex items-start space-x-2 font-sans">
-                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-[#182018] border border-[#292d29] text-[#d3d9cc] text-xs flex items-start space-x-2 font-sans">
+                  <ShieldCheck className="w-4 h-4 text-[#d8f99c] shrink-0 mt-0.5" />
                   <span>
-                    <strong className="text-white font-bold">Automatic Zero-Trust Versioning:</strong> Modifying an existing object will automatically preserve the old revision in your Google Drive history and assign a brand new ETag!
+                    <strong className="text-[#f0f2eb] font-semibold">Automatic Zero-Trust Versioning:</strong> Modifying an existing object will automatically preserve the old revision in your Google Drive history and assign a brand new ETag.
                   </span>
                 </div>
 
                 <Button
                   onClick={handleExecuteEdit}
                   disabled={!editKey || executingEdit || !isConnected}
-                  className="w-full py-6 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.3)] transition-all"
+                  className="w-full py-6 rounded-2xl bg-[#d8f99c] hover:bg-[#cbf187] text-[#0c0e0d] font-bold text-sm uppercase tracking-wider transition-all"
                 >
                   {executingEdit ? "Overwriting in Google Drive..." : "Save Edits & Mint New Version Snapshot"}
                 </Button>
@@ -774,15 +769,15 @@ export default function S3PlaygroundPage() {
               {/* TAB 4: PRESIGNED GRANTS & DELETE */}
               <TabsContent value="security" className="space-y-6">
                 <div className="space-y-2">
-                  <Label className="text-xs font-mono font-bold uppercase text-stone-300">Target Object for Security Operations</Label>
+                  <Label className="text-xs font-mono font-medium uppercase text-[#929a8d]">Target Object for Security Operations</Label>
                   <select
                     value={selectedObjKey}
                     onChange={(e) => setSelectedObjKey(e.target.value)}
-                    className="w-full p-3.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-xs focus:outline-none focus:border-purple-500 cursor-pointer"
+                    className="w-full p-3.5 rounded-xl bg-[#0e110e] border border-[#292d29] text-[#f0f2eb] font-mono text-xs focus:outline-none focus:border-[#d8f99c] cursor-pointer"
                   >
-                    <option value="" className="bg-stone-900 text-stone-500">-- Choose Object --</option>
+                    <option value="" className="bg-[#111411] text-[#555d52]">-- Choose Object --</option>
                     {objectList.map((o) => (
-                      <option key={o.Key} value={o.Key} className="bg-stone-900 text-white">
+                      <option key={o.Key} value={o.Key} className="bg-[#111411] text-[#f0f2eb]">
                         {o.Key}
                       </option>
                     ))}
@@ -791,33 +786,33 @@ export default function S3PlaygroundPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Presigned url generator box */}
-                  <div className="p-5 rounded-2xl bg-stone-950 border border-stone-800 space-y-3 flex flex-col justify-between">
+                  <div className="p-5 rounded-2xl bg-[#0e110e] border border-[#292d29] space-y-3 flex flex-col justify-between">
                     <div className="space-y-1.5">
-                      <div className="font-extrabold text-white text-sm font-sans flex items-center space-x-2">
-                        <ShieldCheck className="w-4 h-4 text-purple-400" />
+                      <div className="font-semibold text-[#f0f2eb] text-sm font-sans flex items-center space-x-2">
+                        <ShieldCheck className="w-4 h-4 text-[#d8f99c]" />
                         <span>Mint Presigned Grant</span>
                       </div>
-                      <p className="text-[11px] text-stone-400">
+                      <p className="text-[11px] text-[#929a8d]">
                         Generate a secure 1-hour streaming URL that grants read access without exposing API credentials.
                       </p>
                     </div>
                     <Button
                       onClick={handleGenerateSigned}
                       disabled={!selectedObjKey || executingSign}
-                      className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs py-5 rounded-xl shadow-md w-full"
+                      className="bg-[#182018] hover:bg-[#202b20] border border-[#292d29] text-[#f0f2eb] font-semibold text-xs py-5 rounded-xl w-full"
                     >
                       {executingSign ? "Signing..." : "Generate 1-Hour Token URL"}
                     </Button>
                   </div>
 
                   {/* Permanent deletion box */}
-                  <div className="p-5 rounded-2xl bg-stone-950 border border-stone-800 space-y-3 flex flex-col justify-between">
+                  <div className="p-5 rounded-2xl bg-[#0e110e] border border-[#292d29] space-y-3 flex flex-col justify-between">
                     <div className="space-y-1.5">
-                      <div className="font-extrabold text-rose-400 text-sm font-sans flex items-center space-x-2">
-                        <Trash2 className="w-4 h-4 text-rose-400" />
+                      <div className="font-semibold text-[#e06c6c] text-sm font-sans flex items-center space-x-2">
+                        <Trash2 className="w-4 h-4 text-[#e06c6c]" />
                         <span>Permanent Cloud Deletion</span>
                       </div>
-                      <p className="text-[11px] text-stone-400">
+                      <p className="text-[11px] text-[#929a8d]">
                         Permanently delete this file and all version archives directly from your Google Drive storage folder.
                       </p>
                     </div>
@@ -825,7 +820,7 @@ export default function S3PlaygroundPage() {
                       variant="outline"
                       onClick={() => handleExecuteDelete(selectedObjKey)}
                       disabled={!selectedObjKey || executingDelete}
-                      className="bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400 font-bold text-xs py-5 rounded-xl w-full"
+                      className="bg-[#251616] hover:bg-[#341b1b] border-[#442222] text-[#e06c6c] hover:text-[#f28b8b] font-semibold text-xs py-5 rounded-xl w-full"
                     >
                       {executingDelete ? "Deleting from Drive..." : "Execute S3 Delete Request"}
                     </Button>
@@ -833,18 +828,18 @@ export default function S3PlaygroundPage() {
                 </div>
 
                 {signedUrl && (
-                  <div className="p-4 rounded-2xl bg-purple-950/30 border border-purple-500/40 space-y-2 font-mono text-xs animate-in fade-in duration-300">
-                    <div className="flex items-center justify-between text-purple-300 font-bold text-[11px] uppercase">
-                      <span>🎉 Active Presigned Streaming URL (Expires in 3600s)</span>
+                  <div className="p-4 rounded-2xl bg-[#0e110e] border border-[#292d29] space-y-2 font-mono text-xs">
+                    <div className="flex items-center justify-between text-[#d8f99c] font-semibold text-[11px] uppercase">
+                      <span>Active Presigned Streaming URL (Expires in 3600s)</span>
                       <Button
                         size="sm"
                         onClick={() => copyToClip(signedUrl, "url")}
-                        className="bg-purple-500 hover:bg-purple-400 text-white text-[10px] font-bold h-7 px-3 rounded-lg"
+                        className="bg-[#182018] hover:bg-[#202b20] border border-[#292d29] text-[#d8f99c] text-[10px] font-semibold h-7 px-3 rounded-lg"
                       >
                         Copy URL
                       </Button>
                     </div>
-                    <div className="bg-stone-950 p-3 rounded-xl border border-stone-800 break-all text-stone-300 text-[11px] max-h-24 overflow-y-auto pr-1">
+                    <div className="bg-[#111411] p-3 rounded-xl border border-[#292d29] break-all text-[#929a8d] text-[11px] max-h-24 overflow-y-auto pr-1">
                       {signedUrl}
                     </div>
                   </div>
@@ -856,17 +851,17 @@ export default function S3PlaygroundPage() {
 
         {/* RIGHT COLUMN: LIVE API TELEMETRY & NETWORK INSPECTOR (5 cols) */}
         <div className="lg:col-span-5 space-y-6 sticky top-20">
-          <Card className="bg-[#0b121c] border-stone-800 shadow-2xl overflow-hidden rounded-3xl">
-            <CardHeader className="p-5 bg-stone-950 border-b border-stone-800 flex flex-row items-center justify-between space-y-0">
+          <Card className="bg-[#111411] border-[#292d29] shadow-2xl overflow-hidden rounded-3xl">
+            <CardHeader className="p-5 bg-[#0e110e] border-b border-[#292d29] flex flex-row items-center justify-between space-y-0">
               <div className="flex items-center space-x-2.5">
-                <Terminal className="w-5 h-5 text-emerald-400" />
-                <CardTitle className="font-bold text-white text-sm font-mono">API Request Inspector</CardTitle>
+                <Terminal className="w-5 h-5 text-[#d8f99c]" />
+                <CardTitle className="font-bold text-[#f0f2eb] text-sm font-mono">API Request Inspector</CardTitle>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setLogs([])}
-                className="h-7 px-2.5 text-[10px] font-mono text-stone-500 hover:text-white"
+                className="h-7 px-2.5 text-[10px] font-mono text-[#555d52] hover:text-[#f0f2eb]"
               >
                 Clear Logs
               </Button>
@@ -874,61 +869,61 @@ export default function S3PlaygroundPage() {
 
             <CardContent className="p-5 space-y-4 max-h-[620px] overflow-y-auto font-mono text-xs">
               {logs.length === 0 ? (
-                <div className="py-20 text-center text-stone-600 font-mono text-xs space-y-2">
-                  <Code className="w-8 h-8 mx-auto opacity-40 text-stone-500" />
+                <div className="py-20 text-center text-[#555d52] font-mono text-xs space-y-2">
+                  <Code className="w-8 h-8 mx-auto opacity-40 text-[#555d52]" />
                   <div>No S3 operations executed yet.</div>
-                  <div className="text-[11px] text-stone-600">Run an upload, list, or edit on the left to inspect raw HTTP headers and cURL equivalents.</div>
+                  <div className="text-[11px] text-[#555d52]">Run an upload, list, or edit on the left to inspect raw HTTP headers and cURL equivalents.</div>
                 </div>
               ) : (
                 logs.map((log) => {
                   const badgeColor =
                     log.method === "PUT"
-                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                      ? "bg-[#182018] text-[#d8f99c] border-[#292d29]"
                       : log.method === "GET"
-                      ? "bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
+                      ? "bg-[#142028] text-[#7dc4e4] border-[#1d3544]"
                       : log.method === "POST"
-                      ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
-                      : "bg-rose-500/20 text-rose-400 border-rose-500/30";
+                      ? "bg-[#1d1628] text-[#c084fc] border-[#372450]"
+                      : "bg-[#251616] text-[#e06c6c] border-[#442222]";
 
                   return (
-                    <div key={log.id} className="p-4 rounded-2xl bg-stone-950/90 border border-stone-800/80 space-y-3 text-stone-300">
-                      <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
+                    <div key={log.id} className="p-4 rounded-2xl bg-[#0e110e] border border-[#292d29] space-y-3 text-[#d3d9cc]">
+                      <div className="flex items-center justify-between border-b border-[#292d29] pb-2.5">
                         <div className="flex items-center space-x-2">
-                          <Badge className={`text-[10px] font-mono font-black ${badgeColor}`}>{log.method}</Badge>
-                          <span className={`text-[11px] font-bold ${log.status >= 200 && log.status < 300 ? "text-emerald-400" : "text-rose-400"}`}>
+                          <Badge className={`text-[10px] font-mono font-semibold ${badgeColor}`}>{log.method}</Badge>
+                          <span className={`text-[11px] font-semibold ${log.status >= 200 && log.status < 300 ? "text-[#d8f99c]" : "text-[#e06c6c]"}`}>
                             Status: {log.status}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2 text-[10px] text-stone-500">
-                          <Clock className="w-3 h-3 text-stone-600" />
+                        <div className="flex items-center space-x-2 text-[10px] text-[#555d52]">
+                          <Clock className="w-3 h-3 text-[#555d52]" />
                           <span>{log.latencyMs} ms</span>
                           <span>&bull; {log.timestamp}</span>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="text-[10px] text-stone-500 font-bold uppercase">Target REST URL:</div>
-                        <div className="text-cyan-300 text-[11px] truncate bg-stone-900 p-2 rounded-lg border border-stone-800">{log.url}</div>
+                        <div className="text-[10px] text-[#555d52] font-semibold uppercase">Target REST URL:</div>
+                        <div className="text-[#d8f99c] text-[11px] truncate bg-[#111411] p-2 rounded-lg border border-[#292d29]">{log.url}</div>
                       </div>
 
                       {/* cURL Command Copy */}
                       <div className="space-y-1">
-                        <div className="flex justify-between items-center text-[10px] text-stone-500 font-bold uppercase">
+                        <div className="flex justify-between items-center text-[10px] text-[#555d52] font-semibold uppercase">
                           <span>Equivalent cURL Syntax:</span>
-                          <button onClick={() => copyToClip(log.curlCommand, log.id)} className="text-cyan-400 hover:underline flex items-center space-x-1 cursor-pointer">
-                            {copiedLogId === log.id ? <Check className="w-3 h-3 text-emerald-400 inline" /> : <Copy className="w-3 h-3 inline" />}
+                          <button onClick={() => copyToClip(log.curlCommand, log.id)} className="text-[#d8f99c] hover:underline flex items-center space-x-1 cursor-pointer">
+                            {copiedLogId === log.id ? <Check className="w-3 h-3 text-[#d8f99c] inline" /> : <Copy className="w-3 h-3 inline" />}
                             <span>{copiedLogId === log.id ? "Copied!" : "Copy cURL"}</span>
                           </button>
                         </div>
-                        <pre className="text-[10px] text-stone-400 bg-black/60 p-2.5 rounded-xl border border-stone-800/80 overflow-x-auto leading-tight font-mono select-all">
+                        <pre className="text-[10px] text-[#929a8d] bg-[#0c0e0d] p-2.5 rounded-xl border border-[#292d29] overflow-x-auto leading-tight font-mono select-all">
                           {log.curlCommand}
                         </pre>
                       </div>
 
                       {log.responsePayload && (
                         <div className="space-y-1">
-                          <div className="text-[10px] text-stone-500 font-bold uppercase">Server Response:</div>
-                          <pre className="text-[10px] text-emerald-400 bg-stone-900/50 p-2.5 rounded-xl border border-stone-800 overflow-x-auto max-h-32">
+                          <div className="text-[10px] text-[#555d52] font-semibold uppercase">Server Response:</div>
+                          <pre className="text-[10px] text-[#d8f99c] bg-[#111411] p-2.5 rounded-xl border border-[#292d29] overflow-x-auto max-h-32">
                             {log.responsePayload}
                           </pre>
                         </div>
@@ -945,32 +940,32 @@ export default function S3PlaygroundPage() {
 
       {/* QUICK PROVISION BUCKET DIALOG */}
       <Dialog open={showNewBucketDialog} onOpenChange={setShowNewBucketDialog}>
-        <DialogContent className="bg-stone-950 border-stone-800 text-stone-100 sm:max-w-md rounded-3xl p-6">
+        <DialogContent className="bg-[#111411] border-[#292d29] text-[#f0f2eb] sm:max-w-md rounded-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-lg font-extrabold text-white flex items-center space-x-2">
-              <Plus className="w-5 h-5 text-emerald-400" />
+            <DialogTitle className="text-lg font-bold text-[#f0f2eb] flex items-center space-x-2">
+              <Plus className="w-5 h-5 text-[#d8f99c]" />
               <span>Provision Playground Bucket</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-stone-400">
+            <DialogDescription className="text-xs text-[#929a8d]">
               Instantly creates a designated test folder inside your Google Drive storage.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreateBucket} className="space-y-4">
             <div>
-              <Label className="text-xs font-semibold text-stone-300 uppercase">Bucket Identifier</Label>
+              <Label className="text-xs font-semibold text-[#929a8d] uppercase">Bucket Identifier</Label>
               <Input
                 value={newBucketName}
                 onChange={(e) => setNewBucketName(e.target.value.toLowerCase())}
                 placeholder="e.g., s3-playground-dev"
                 required
-                className="bg-stone-900 border-stone-800 text-white font-mono text-sm mt-1.5 rounded-xl focus-visible:ring-emerald-500"
+                className="bg-[#0e110e] border-[#292d29] text-[#f0f2eb] font-mono text-sm mt-1.5 rounded-xl focus-visible:ring-[#d8f99c]"
               />
             </div>
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setShowNewBucketDialog(false)} className="rounded-xl text-stone-300">
+              <Button type="button" variant="ghost" onClick={() => setShowNewBucketDialog(false)} className="rounded-xl text-[#929a8d] hover:text-[#f0f2eb] hover:bg-[#182018]">
                 Cancel
               </Button>
-              <Button type="submit" disabled={creatingBucket || !newBucketName.trim()} className="bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold rounded-xl px-5 shadow-lg">
+              <Button type="submit" disabled={creatingBucket || !newBucketName.trim()} className="preview-create">
                 {creatingBucket ? "Provisioning..." : "Create Bucket"}
               </Button>
             </DialogFooter>
